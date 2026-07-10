@@ -3,16 +3,23 @@
 // ================================================
 document.addEventListener("DOMContentLoaded", function () {
   const toggleBtn = document.getElementById("sidebarToggle");
+  const mobileMoreBtn = document.getElementById("mobileMoreBtn");
   const sidebar = document.getElementById("sidebar");
 
-  if (toggleBtn && sidebar) {
-    toggleBtn.addEventListener("click", function () {
-      sidebar.classList.toggle("show");
-    });
+  function toggleSidebar() {
+    if (sidebar) sidebar.classList.toggle("show");
+  }
 
+  if (toggleBtn) toggleBtn.addEventListener("click", toggleSidebar);
+  if (mobileMoreBtn) mobileMoreBtn.addEventListener("click", toggleSidebar);
+
+  if (sidebar) {
     document.addEventListener("click", function (e) {
       if (window.innerWidth <= 991) {
-        if (!sidebar.contains(e.target) && !toggleBtn.contains(e.target)) {
+        const clickedToggle =
+          (toggleBtn && toggleBtn.contains(e.target)) ||
+          (mobileMoreBtn && mobileMoreBtn.contains(e.target));
+        if (!sidebar.contains(e.target) && !clickedToggle) {
           sidebar.classList.remove("show");
         }
       }
@@ -38,7 +45,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 // ================================================
-// Show / Hide Password Toggle (used across the app)
+// Show / Hide Password Toggle
 // ================================================
 function togglePassword(inputId, btn) {
   const input = document.getElementById(inputId);
@@ -94,7 +101,7 @@ function confirmDelete(url) {
 }
 
 // ================================================
-// Universal Delete Form Handler (POST-based delete forms with class "delete-form")
+// Universal Delete Form Handler
 // ================================================
 document.addEventListener("submit", function (e) {
   if (e.target.classList && e.target.classList.contains("delete-form")) {

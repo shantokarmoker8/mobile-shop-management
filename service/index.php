@@ -43,7 +43,7 @@ include __DIR__ . '/../includes/sidebar.php';
         <div class="card-panel mb-3">
             <form method="GET" class="row g-2">
                 <div class="col-md-5">
-                    <input type="text" name="search" class="form-control form-control-sm" placeholder="Search by job no, customer, phone, IMEI" value="<?= htmlspecialchars($search) ?>">
+                    <input type="text" name="search" class="form-control form-control-sm" placeholder="Search by job no, customer, phone, IMEI" value="<?= h($search) ?>">
                 </div>
                 <div class="col-md-3">
                     <select name="status" class="form-select form-select-sm">
@@ -62,7 +62,7 @@ include __DIR__ . '/../includes/sidebar.php';
 
         <div class="card-panel">
             <div class="table-responsive">
-                <table class="table table-custom mb-0">
+                <table class="table table-custom table-mobile-cards mb-0">
                     <thead>
                         <tr>
                             <th>Job No</th>
@@ -82,20 +82,20 @@ include __DIR__ . '/../includes/sidebar.php';
 
                         <?php foreach ($jobs as $j): ?>
                         <tr>
-                            <td class="fw-semibold"><?= htmlspecialchars($j['job_no']) ?></td>
-                            <td><?= htmlspecialchars($j['customer_name']) ?><br><span class="small text-muted"><?= htmlspecialchars($j['customer_phone']) ?></span></td>
-                            <td><?= htmlspecialchars($j['brand']) ?> <?= htmlspecialchars($j['model']) ?></td>
-                            <td><?= formatDate($j['created_at']) ?></td>
-                            <td><?= money($j['total_amount']) ?></td>
-                            <td>
+                            <td class="fw-semibold cell-title" data-label="Job No"><?= h($j['job_no']) ?></td>
+                            <td data-label="Customer"><?= h($j['customer_name']) ?> <span class="small text-muted">(<?= h($j['customer_phone']) ?>)</span></td>
+                            <td data-label="Brand/Model"><?= h($j['brand']) ?> <?= h($j['model']) ?></td>
+                            <td data-label="Date"><?= formatDate($j['created_at']) ?></td>
+                            <td data-label="Total"><?= money($j['total_amount']) ?></td>
+                            <td data-label="Due">
                                 <?php if ($j['due_amount'] > 0): ?>
                                     <span class="badge-status badge-due"><?= money($j['due_amount']) ?></span>
                                 <?php else: ?>
                                     <span class="badge-status badge-paid">Paid</span>
                                 <?php endif; ?>
                             </td>
-                            <td><span class="badge-status badge-<?= $j['status'] ?>"><?= ucfirst($j['status']) ?></span></td>
-                            <td class="text-end">
+                            <td data-label="Status"><span class="badge-status badge-<?= $j['status'] ?>"><?= ucfirst($j['status']) ?></span></td>
+                            <td class="text-end cell-actions" data-label="Action">
                                 <a href="view.php?id=<?= $j['id'] ?>" class="btn btn-soft btn-sm" title="View"><i class="bi bi-eye"></i></a>
                                 <a href="edit.php?id=<?= $j['id'] ?>" class="btn btn-soft btn-sm" title="Edit"><i class="bi bi-pencil"></i></a>
                             </td>

@@ -39,7 +39,7 @@ include __DIR__ . '/../includes/sidebar.php';
         <div class="card-panel mb-3">
             <form method="GET" class="row g-2">
                 <div class="col-md-6">
-                    <input type="text" name="search" class="form-control form-control-sm" placeholder="Search by invoice no or supplier" value="<?= htmlspecialchars($search) ?>">
+                    <input type="text" name="search" class="form-control form-control-sm" placeholder="Search by invoice no or supplier" value="<?= h($search) ?>">
                 </div>
                 <div class="col-md-2">
                     <button type="submit" class="btn btn-primary btn-sm w-100"><i class="bi bi-search me-1"></i>Search</button>
@@ -49,7 +49,7 @@ include __DIR__ . '/../includes/sidebar.php';
 
         <div class="card-panel">
             <div class="table-responsive">
-                <table class="table table-custom mb-0">
+                <table class="table table-custom table-mobile-cards mb-0">
                     <thead>
                         <tr>
                             <th>Invoice No</th>
@@ -68,19 +68,19 @@ include __DIR__ . '/../includes/sidebar.php';
 
                         <?php foreach ($purchases as $p): ?>
                         <tr>
-                            <td class="fw-semibold"><?= htmlspecialchars($p['invoice_no']) ?></td>
-                            <td><?= htmlspecialchars($p['supplier_name'] ?: '-') ?></td>
-                            <td><?= formatDate($p['created_at']) ?></td>
-                            <td><?= money($p['total_amount']) ?></td>
-                            <td><?= money($p['paid_amount']) ?></td>
-                            <td>
+                            <td class="fw-semibold cell-title" data-label="Invoice"><?= h($p['invoice_no']) ?></td>
+                            <td data-label="Supplier"><?= h($p['supplier_name'] ?: '-') ?></td>
+                            <td data-label="Date"><?= formatDate($p['created_at']) ?></td>
+                            <td data-label="Total"><?= money($p['total_amount']) ?></td>
+                            <td data-label="Paid"><?= money($p['paid_amount']) ?></td>
+                            <td data-label="Due">
                                 <?php if ($p['due_amount'] > 0): ?>
                                     <span class="badge-status badge-due"><?= money($p['due_amount']) ?></span>
                                 <?php else: ?>
                                     <span class="badge-status badge-paid">Paid</span>
                                 <?php endif; ?>
                             </td>
-                            <td class="text-end">
+                            <td class="text-end cell-actions" data-label="Action">
                                 <a href="view.php?id=<?= $p['id'] ?>" class="btn btn-soft btn-sm" title="View"><i class="bi bi-eye"></i></a>
                                 <?php if ($p['due_amount'] > 0): ?>
                                 <a href="pay-due.php?id=<?= $p['id'] ?>" class="btn btn-sm btn-outline-success" title="Pay Due"><i class="bi bi-cash"></i></a>

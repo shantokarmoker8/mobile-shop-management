@@ -39,7 +39,7 @@ include __DIR__ . '/../includes/sidebar.php';
         <div class="card-panel mb-3">
             <form method="GET" class="row g-2">
                 <div class="col-md-6">
-                    <input type="text" name="search" class="form-control form-control-sm" placeholder="Search by invoice no or customer" value="<?= htmlspecialchars($search) ?>">
+                    <input type="text" name="search" class="form-control form-control-sm" placeholder="Search by invoice no or customer" value="<?= h($search) ?>">
                 </div>
                 <div class="col-md-2">
                     <button type="submit" class="btn btn-primary btn-sm w-100"><i class="bi bi-search me-1"></i>Search</button>
@@ -49,7 +49,7 @@ include __DIR__ . '/../includes/sidebar.php';
 
         <div class="card-panel">
             <div class="table-responsive">
-                <table class="table table-custom mb-0">
+                <table class="table table-custom table-mobile-cards mb-0">
                     <thead>
                         <tr>
                             <th>Invoice No</th>
@@ -70,21 +70,21 @@ include __DIR__ . '/../includes/sidebar.php';
 
                         <?php foreach ($sales as $s): ?>
                         <tr>
-                            <td class="fw-semibold"><?= htmlspecialchars($s['invoice_no']) ?></td>
-                            <td><?= htmlspecialchars($s['customer_name'] ?: 'Walk-in') ?></td>
-                            <td><?= ucfirst(str_replace('_',' ',$s['sale_type'])) ?></td>
-                            <td><?= formatDate($s['created_at']) ?></td>
-                            <td><?= money($s['total_amount'] - $s['discount']) ?></td>
-                            <td><?= money($s['paid_amount']) ?></td>
-                            <td>
+                            <td class="fw-semibold cell-title" data-label="Invoice"><?= h($s['invoice_no']) ?></td>
+                            <td data-label="Customer"><?= h($s['customer_name'] ?: 'Walk-in') ?></td>
+                            <td data-label="Type"><?= ucfirst(str_replace('_',' ',$s['sale_type'])) ?></td>
+                            <td data-label="Date"><?= formatDate($s['created_at']) ?></td>
+                            <td data-label="Total"><?= money($s['total_amount'] - $s['discount']) ?></td>
+                            <td data-label="Paid"><?= money($s['paid_amount']) ?></td>
+                            <td data-label="Due">
                                 <?php if ($s['due_amount'] > 0): ?>
                                     <span class="badge-status badge-due"><?= money($s['due_amount']) ?></span>
                                 <?php else: ?>
                                     <span class="badge-status badge-paid">Paid</span>
                                 <?php endif; ?>
                             </td>
-                            <td class="text-success fw-semibold"><?= money($s['total_profit']) ?></td>
-                            <td class="text-end">
+                            <td class="text-success fw-semibold" data-label="Profit"><?= money($s['total_profit']) ?></td>
+                            <td class="text-end cell-actions" data-label="Action">
                                 <a href="view.php?id=<?= $s['id'] ?>" class="btn btn-soft btn-sm" title="View"><i class="bi bi-eye"></i></a>
                                 <?php if ($s['due_amount'] > 0): ?>
                                 <a href="collect-payment.php?id=<?= $s['id'] ?>" class="btn btn-sm btn-outline-success" title="Collect Payment"><i class="bi bi-cash"></i></a>

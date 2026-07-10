@@ -247,7 +247,6 @@ a {
   margin-right: 14px;
   display: none;
 }
-
 .topbar-title {
   font-weight: 700;
   font-size: 15px;
@@ -263,6 +262,7 @@ a {
   gap: 6px;
   display: flex;
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .btn-user-dropdown {
@@ -323,7 +323,7 @@ a {
 }
 
 /* ================================================
-   Dashboard Stat Cards
+   Dashboard Stat Cards (Clickable)
 ================================================ */
 .stats-grid {
   display: grid;
@@ -342,6 +342,17 @@ a {
   }
 }
 
+.stat-card-link {
+  display: block;
+  height: 100%;
+  color: inherit;
+}
+.stat-card-link:active .stat-card,
+.stat-card-link:hover .stat-card {
+  border-color: var(--primary);
+  background: var(--primary-light);
+}
+
 .stat-card {
   background: var(--white);
   border-radius: 10px;
@@ -351,6 +362,9 @@ a {
   display: flex;
   align-items: center;
   gap: 10px;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
 }
 .stat-card .stat-icon {
   width: 34px;
@@ -416,15 +430,11 @@ a {
   border: 1px solid var(--border);
   padding: 20px;
 }
-
 .chart-box {
   height: 280px;
   position: relative;
 }
 
-/* ================================================
-   Dashboard Charts Slider (swipeable on mobile only)
-================================================ */
 .charts-slider {
   display: flex;
   gap: 12px;
@@ -454,7 +464,7 @@ a {
 }
 
 /* ================================================
-   Tables
+   Tables (Desktop)
 ================================================ */
 .table-custom thead th {
   background: var(--primary-light);
@@ -470,6 +480,133 @@ a {
   padding: 10px 12px;
   vertical-align: middle;
   border-bottom: 1px solid var(--border);
+}
+
+/* ================================================
+   Mobile Card-Table Pattern (list pages: Product, Purchase, Sales, Service)
+================================================ */
+@media (max-width: 767px) {
+  .table-mobile-cards thead {
+    display: none;
+  }
+  .table-mobile-cards,
+  .table-mobile-cards tbody,
+  .table-mobile-cards tr,
+  .table-mobile-cards td {
+    display: block;
+    width: 100%;
+  }
+  .table-mobile-cards tr {
+    margin-bottom: 12px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 14px;
+    background: var(--white);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  }
+  .table-mobile-cards td {
+    border: none;
+    padding: 5px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12.5px;
+  }
+  .table-mobile-cards td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: var(--text-muted);
+    font-size: 11px;
+    margin-right: 10px;
+    flex-shrink: 0;
+  }
+  .table-mobile-cards td.cell-title {
+    font-size: 14.5px;
+    font-weight: 700;
+    padding-bottom: 8px;
+    margin-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+  .table-mobile-cards td.cell-title::before {
+    content: none;
+  }
+  .table-mobile-cards td.cell-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding-top: 10px;
+    margin-top: 6px;
+    border-top: 1px solid var(--border);
+  }
+  .table-mobile-cards td.cell-actions::before {
+    content: none;
+  }
+  .table-mobile-cards td.cell-actions .btn,
+  .table-mobile-cards td.cell-actions form {
+    flex: 1;
+    min-width: 40px;
+  }
+  .table-mobile-cards td.cell-actions form button {
+    width: 100%;
+  }
+}
+
+/* ================================================
+   Mobile Item-Entry Table Pattern (Purchase/Sales/Service item rows with inputs)
+================================================ */
+@media (max-width: 767px) {
+  .items-table-mobile thead {
+    display: none;
+  }
+  .items-table-mobile,
+  .items-table-mobile tbody,
+  .items-table-mobile tr,
+  .items-table-mobile td {
+    display: block;
+    width: 100%;
+  }
+  .items-table-mobile tr {
+    position: relative;
+    margin-bottom: 12px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px;
+    background: #fafbfe;
+  }
+  .items-table-mobile td {
+    border: none;
+    padding: 6px 0;
+  }
+  .items-table-mobile td::before {
+    content: attr(data-label);
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 3px;
+  }
+  .items-table-mobile td.cell-remove {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    padding: 0;
+    width: auto;
+  }
+  .items-table-mobile td.cell-remove::before {
+    content: none;
+  }
+  .items-table-mobile td.cell-total {
+    background: var(--primary-light);
+    border-radius: 8px;
+    padding: 8px !important;
+  }
+  .items-table-mobile .row-2col {
+    display: flex;
+    gap: 10px;
+  }
+  .items-table-mobile .row-2col > div {
+    flex: 1;
+  }
 }
 
 /* ================================================
@@ -592,7 +729,115 @@ a {
 }
 
 /* ================================================
-   Responsive
+   Mobile Bottom Navigation Bar (App-like)
+================================================ */
+.mobile-bottom-nav {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .mobile-bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--white);
+    border-top: 1px solid var(--border);
+    z-index: 1040;
+    padding: 6px 4px calc(6px + env(safe-area-inset-bottom, 0px));
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.06);
+  }
+  .mobile-nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: 6px 2px;
+    color: var(--text-muted);
+    font-size: 10px;
+    font-weight: 600;
+    border: none;
+    background: none;
+  }
+  .mobile-nav-item i {
+    font-size: 19px;
+  }
+  .mobile-nav-item.active {
+    color: var(--primary);
+  }
+  .mobile-nav-item.fab .fab-circle {
+    width: 46px;
+    height: 46px;
+    background: var(--primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: -22px;
+    box-shadow: 0 4px 10px rgba(47, 91, 224, 0.4);
+  }
+  .mobile-nav-item.fab .fab-circle i {
+    font-size: 20px;
+    color: #fff;
+    margin: 0;
+  }
+  .mobile-nav-item.fab span {
+    margin-top: 1px;
+  }
+
+  .content-body {
+    padding-bottom: 80px;
+  }
+}
+
+/* ================================================
+   General Mobile Font/Spacing Reduction
+================================================ */
+@media (max-width: 767px) {
+  body {
+    font-size: 13px;
+  }
+  .card-panel {
+    padding: 14px;
+  }
+  h5.fw-bold {
+    font-size: 16px;
+  }
+  h6.fw-bold {
+    font-size: 13.5px;
+  }
+  .btn {
+    font-size: 12.5px;
+  }
+  .btn-sm {
+    font-size: 11.5px;
+    padding: 0.3rem 0.6rem;
+  }
+  .form-label {
+    font-size: 12px;
+  }
+  .form-control,
+  .form-select {
+    font-size: 13px;
+  }
+  .topbar-cash {
+    font-size: 11px;
+    padding: 5px 10px;
+  }
+  .topbar-title {
+    font-size: 13px;
+    max-width: 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+/* ================================================
+   Responsive Sidebar
 ================================================ */
 @media (max-width: 991px) {
   .sidebar {

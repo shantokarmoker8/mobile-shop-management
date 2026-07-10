@@ -104,76 +104,96 @@ include __DIR__ . '/../includes/sidebar.php';
         </div>
 
         <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon" style="background:#2F5BE0;"><i class="bi bi-wallet2"></i></div>
-                <div class="stat-text">
-                    <div class="stat-value"><?= money($current_cash) ?></div>
-                    <div class="stat-label">Current Cash</div>
+            <a href="<?= BASE_URL ?>cash/index.php" class="stat-card-link">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background:#2F5BE0;"><i class="bi bi-wallet2"></i></div>
+                    <div class="stat-text">
+                        <div class="stat-value"><?= money($current_cash) ?></div>
+                        <div class="stat-label">Current Cash</div>
+                    </div>
                 </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon" style="background:#7c3aed;"><i class="bi bi-boxes"></i></div>
-                <div class="stat-text">
-                    <div class="stat-value"><?= money($stock_value) ?></div>
-                    <div class="stat-label">Stock Value</div>
+            </a>
+            <a href="<?= BASE_URL ?>reports/stock.php" class="stat-card-link">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background:#7c3aed;"><i class="bi bi-boxes"></i></div>
+                    <div class="stat-text">
+                        <div class="stat-value"><?= money($stock_value) ?></div>
+                        <div class="stat-label">Stock Value</div>
+                    </div>
                 </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon" style="background:#1fa15a;"><i class="bi bi-cash-coin"></i></div>
-                <div class="stat-text">
-                    <div class="stat-value"><?= money($total_sales) ?></div>
-                    <div class="stat-label">Total Sales</div>
+            </a>
+            <a href="<?= BASE_URL ?>sales/index.php" class="stat-card-link">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background:#1fa15a;"><i class="bi bi-cash-coin"></i></div>
+                    <div class="stat-text">
+                        <div class="stat-value"><?= money($total_sales) ?></div>
+                        <div class="stat-label">Total Sales</div>
+                    </div>
                 </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon" style="background:#f0a93a;"><i class="bi bi-cart-plus"></i></div>
-                <div class="stat-text">
-                    <div class="stat-value"><?= money($total_purchase) ?></div>
-                    <div class="stat-label">Total Purchase</div>
+            </a>
+            <a href="<?= BASE_URL ?>purchase/index.php" class="stat-card-link">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background:#f0a93a;"><i class="bi bi-cart-plus"></i></div>
+                    <div class="stat-text">
+                        <div class="stat-value"><?= money($total_purchase) ?></div>
+                        <div class="stat-label">Total Purchase</div>
+                    </div>
                 </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon" style="background:#e14343;"><i class="bi bi-receipt"></i></div>
-                <div class="stat-text">
-                    <div class="stat-value"><?= money($total_expense) ?></div>
-                    <div class="stat-label">Total Expense</div>
+            </a>
+            <a href="<?= BASE_URL ?>expense/index.php" class="stat-card-link">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background:#e14343;"><i class="bi bi-receipt"></i></div>
+                    <div class="stat-text">
+                        <div class="stat-value"><?= money($total_expense) ?></div>
+                        <div class="stat-label">Total Expense</div>
+                    </div>
                 </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon" style="background:#0d9488;"><i class="bi bi-graph-up-arrow"></i></div>
-                <div class="stat-text">
-                    <div class="stat-value"><?= money($net_profit) ?></div>
-                    <div class="stat-label">Net Profit</div>
+            </a>
+            <a href="<?= BASE_URL ?>reports/profit.php" class="stat-card-link">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background:#0d9488;"><i class="bi bi-graph-up-arrow"></i></div>
+                    <div class="stat-text">
+                        <div class="stat-value"><?= money($net_profit) ?></div>
+                        <div class="stat-label">Net Profit</div>
+                    </div>
                 </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon" style="background:#dc2626;"><i class="bi bi-person-exclamation"></i></div>
-                <div class="stat-text">
-                    <div class="stat-value"><?= money($customer_due) ?></div>
-                    <div class="stat-label">Customer Due</div>
+            </a>
+            <a href="<?= BASE_URL ?>reports/customer-due.php" class="stat-card-link">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background:#dc2626;"><i class="bi bi-person-exclamation"></i></div>
+                    <div class="stat-text">
+                        <div class="stat-value"><?= money($customer_due) ?></div>
+                        <div class="stat-label">Customer Due</div>
+                    </div>
                 </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon" style="background:#9333ea;"><i class="bi bi-truck"></i></div>
-                <div class="stat-text">
-                    <div class="stat-value"><?= money($supplier_due) ?></div>
-                    <div class="stat-label">Supplier Due</div>
+            </a>
+            <a href="<?= BASE_URL ?>reports/supplier-due.php" class="stat-card-link">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background:#9333ea;"><i class="bi bi-truck"></i></div>
+                    <div class="stat-text">
+                        <div class="stat-value"><?= money($supplier_due) ?></div>
+                        <div class="stat-label">Supplier Due</div>
+                    </div>
                 </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon" style="background:#2563eb;"><i class="bi bi-tools"></i></div>
-                <div class="stat-text">
-                    <div class="stat-value"><?= $pending_service ?></div>
-                    <div class="stat-label">Pending Service</div>
+            </a>
+            <a href="<?= BASE_URL ?>service/index.php?status=pending" class="stat-card-link">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background:#2563eb;"><i class="bi bi-tools"></i></div>
+                    <div class="stat-text">
+                        <div class="stat-value"><?= $pending_service ?></div>
+                        <div class="stat-label">Pending Service</div>
+                    </div>
                 </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon" style="background:#ea580c;"><i class="bi bi-exclamation-triangle"></i></div>
-                <div class="stat-text">
-                    <div class="stat-value"><?= $low_stock ?></div>
-                    <div class="stat-label">Low Stock Items</div>
+            </a>
+            <a href="<?= BASE_URL ?>products/index.php?stock=low" class="stat-card-link">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background:#ea580c;"><i class="bi bi-exclamation-triangle"></i></div>
+                    <div class="stat-text">
+                        <div class="stat-value"><?= $low_stock ?></div>
+                        <div class="stat-label">Low Stock Items</div>
+                    </div>
                 </div>
-            </div>
+            </a>
         </div>
 
         <div class="charts-slider dash-charts-row">
@@ -210,12 +230,7 @@ new Chart(document.getElementById('trendChart'), {
             { label: 'Expense', data: <?= json_encode($chart_expense) ?>, borderColor: '#e14343', backgroundColor: 'rgba(225,67,67,0.08)', tension: 0.35, fill: true }
         ]
     },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { position: 'bottom' } },
-        scales: { y: { beginAtZero: true } }
-    }
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } }, scales: { y: { beginAtZero: true } } }
 });
 
 new Chart(document.getElementById('userSalesChart'), {
@@ -227,11 +242,7 @@ new Chart(document.getElementById('userSalesChart'), {
             backgroundColor: ['#2F5BE0', '#7c3aed', '#1fa15a', '#f0a93a', '#e14343', '#0d9488', '#dc2626']
         }]
     },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { position: 'bottom' } }
-    }
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
 });
 </script>
 

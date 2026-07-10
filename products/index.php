@@ -58,13 +58,13 @@ include __DIR__ . '/../includes/sidebar.php';
         <div class="card-panel mb-3">
             <form method="GET" class="row g-2">
                 <div class="col-md-4">
-                    <input type="text" name="search" class="form-control form-control-sm" placeholder="Search by name, brand, barcode, IMEI" value="<?= htmlspecialchars($search) ?>">
+                    <input type="text" name="search" class="form-control form-control-sm" placeholder="Search by name, brand, barcode, IMEI" value="<?= h($search) ?>">
                 </div>
                 <div class="col-md-3">
                     <select name="category" class="form-select form-select-sm">
                         <option value="">All Categories</option>
                         <?php foreach ($categories as $cat): ?>
-                        <option value="<?= $cat['id'] ?>" <?= $category_filter == $cat['id'] ? 'selected' : '' ?>><?= htmlspecialchars($cat['name']) ?></option>
+                        <option value="<?= $cat['id'] ?>" <?= $category_filter == $cat['id'] ? 'selected' : '' ?>><?= h($cat['name']) ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -83,7 +83,7 @@ include __DIR__ . '/../includes/sidebar.php';
 
         <div class="card-panel">
             <div class="table-responsive">
-                <table class="table table-custom mb-0">
+                <table class="table table-custom table-mobile-cards mb-0">
                     <thead>
                         <tr>
                             <th>Name</th>
@@ -104,12 +104,12 @@ include __DIR__ . '/../includes/sidebar.php';
 
                         <?php foreach ($products as $p): ?>
                         <tr>
-                            <td class="fw-semibold"><?= htmlspecialchars($p['name']) ?></td>
-                            <td><?= htmlspecialchars($p['brand'] ?: '-') ?></td>
-                            <td><?= htmlspecialchars($p['category_name'] ?: '-') ?></td>
-                            <td><?= money($p['buy_price']) ?></td>
-                            <td><?= money($p['sell_price']) ?></td>
-                            <td>
+                            <td class="fw-semibold cell-title" data-label="Name"><?= h($p['name']) ?></td>
+                            <td data-label="Brand"><?= h($p['brand'] ?: '-') ?></td>
+                            <td data-label="Category"><?= h($p['category_name'] ?: '-') ?></td>
+                            <td data-label="Buy Price"><?= money($p['buy_price']) ?></td>
+                            <td data-label="Sell Price"><?= money($p['sell_price']) ?></td>
+                            <td data-label="Quantity">
                                 <?php if ($p['quantity'] <= 0): ?>
                                     <span class="badge-status badge-due">Out of Stock</span>
                                 <?php elseif ($p['quantity'] <= $p['low_stock_qty']): ?>
@@ -118,17 +118,17 @@ include __DIR__ . '/../includes/sidebar.php';
                                     <?= $p['quantity'] ?>
                                 <?php endif; ?>
                             </td>
-                            <td class="small text-muted">
-                                <?= $p['barcode'] ? htmlspecialchars($p['barcode']) : '' ?>
-                                <?= $p['imei'] ? '<br>' . htmlspecialchars($p['imei']) : '' ?>
+                            <td class="small text-muted" data-label="Barcode/IMEI">
+                                <?= $p['barcode'] ? h($p['barcode']) : '' ?>
+                                <?= $p['imei'] ? '<br>' . h($p['imei']) : '' ?>
                                 <?= (!$p['barcode'] && !$p['imei']) ? '-' : '' ?>
                             </td>
-                            <td>
+                            <td data-label="Status">
                                 <span class="badge-status <?= $p['status'] === 'active' ? 'badge-completed' : 'badge-due' ?>">
                                     <?= ucfirst($p['status']) ?>
                                 </span>
                             </td>
-                            <td class="text-end">
+                            <td class="text-end cell-actions" data-label="Action">
                                 <a href="edit.php?id=<?= $p['id'] ?>" class="btn btn-soft btn-sm"><i class="bi bi-pencil"></i></a>
                                 <form action="delete.php" method="POST" class="delete-form d-inline">
                                     <input type="hidden" name="id" value="<?= $p['id'] ?>">

@@ -3,20 +3,20 @@
         <button class="btn-toggle-sidebar" id="sidebarToggle">
             <i class="bi bi-list"></i>
         </button>
-        <h6 class="topbar-title mb-0"><?= htmlspecialchars($page_title ?? '') ?></h6>
+        <h6 class="topbar-title mb-0"><?= h($page_title ?? '') ?></h6>
     </div>
 
-    <div class="d-flex align-items-center gap-3">
-        <div class="topbar-cash d-none d-md-flex">
+    <div class="d-flex align-items-center gap-2 gap-md-3">
+        <div class="topbar-cash">
             <i class="bi bi-wallet2"></i>
-            <span>Cash: <?= money(getCurrentCash($pdo)) ?></span>
+            <span><?= money(getCurrentCash($pdo)) ?></span>
         </div>
 
         <div class="dropdown">
             <button class="btn-user-dropdown" data-bs-toggle="dropdown">
                 <i class="bi bi-person-circle"></i>
-                <span class="d-none d-md-inline"><?= htmlspecialchars($_SESSION['full_name']) ?></span>
-                <i class="bi bi-chevron-down small"></i>
+                <span class="d-none d-md-inline"><?= h($_SESSION['full_name']) ?></span>
+                <i class="bi bi-chevron-down small d-none d-md-inline"></i>
             </button>
             <ul class="dropdown-menu dropdown-menu-end">
                 <li><span class="dropdown-item-text small text-muted"><?= ucfirst($_SESSION['role']) ?></span></li>

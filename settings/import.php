@@ -29,27 +29,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'purchases', 'purchase_items', 'supplier_payments',
         'sales', 'sale_items', 'customer_payments',
         'service_jobs', 'service_job_parts',
+        'sale_returns', 'sale_return_items',
         'cash_transactions', 'expenses'
     ];
+
+    // Delete in reverse order first, so child rows are cleared before parents,
+    // even though FK checks are disabled below (keeps data clean either way).
+    $delete_order = array_reverse($import_order);
 
     $pdo->exec("SET FOREIGN_KEY_CHECKS=0");
     $pdo->beginTransaction();
 
     try {
+        // Clear existing data using DELETE (not TRUNCATE), so it stays inside the transaction
+        foreach ($delete_order as $table) {
+            $stmt = $pdo->query("SHOW TABLES LIKE " . $pdo->quote($table));
+            if ($stmt->rowCount() === 0) continue; // table doesn't exist, skip
+            $pdo->exec("DELETE FROM `{$table}`");
+            $pdo->exec("ALTER TABLE `{$table}` AUTO_INCREMENT = 1");
+        }
+
+        // Insert data from backup
         foreach ($import_order as $table) {
             if (!isset($backup['data'][$table]) || count($backup['data'][$table]) === 0) continue;
 
-            $pdo->exec("TRUNCATE TABLE `$table`");
+            $stmt = $pdo->query("SHOW TABLES LIKE " . $pdo->quote($table));
+            if ($stmt->rowCount() === 0) continue; // table doesn't exist in this DB, skip
 
             $rows = $backup['data'][$table];
             $columns = array_keys($rows[0]);
             $columnList = '`' . implode('`,`', $columns) . '`';
             $placeholders = implode(',', array_fill(0, count($columns), '?'));
 
-            $stmt = $pdo->prepare("INSERT INTO `$table` ($columnList) VALUES ($placeholders)");
+            $insertStmt = $pdo->prepare("INSERT INTO `{$table}` ($columnList) VALUES ($placeholders)");
 
             foreach ($rows as $row) {
-                $stmt->execute(array_values($row));
+                $insertStmt->execute(array_values($row));
             }
         }
 
@@ -59,7 +74,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         setFlash('success', 'Data imported successfully. All previous data has been replaced.');
         redirect(BASE_URL . 'settings/import.php');
     } catch (Exception $e) {
-        $pdo->rollBack();
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
         $pdo->exec("SET FOREIGN_KEY_CHECKS=1");
         setFlash('error', 'Import failed: ' . $e->getMessage());
         redirect(BASE_URL . 'settings/import.php');

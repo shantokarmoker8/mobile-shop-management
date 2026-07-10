@@ -4,6 +4,8 @@ $flash = getFlash();
     </div><!-- /.main-content -->
 </div><!-- /.app-wrapper -->
 
+<?php include __DIR__ . '/mobile-nav.php'; ?>
+
 <script src="<?= BASE_URL ?>assets/js/main.js"></script>
 
 <?php if ($flash): ?>

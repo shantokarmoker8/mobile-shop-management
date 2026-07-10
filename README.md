@@ -30,13 +30,6 @@ A simple Shop & Service Management web app for mobile phone shops, built with **
 4. Place `logo.png`, `loading.gif`, and `fevicon.png` inside the `assets/` folder.
 5. Start Apache and MySQL, then open the project in your browser.
 
-## Default Login
-
-- **Username:** admin
-- **Password:** admin123
-
-Change this after your first login from **My Profile**.
-
 ## Note
 
 Passwords are stored in plain text (no hashing) as per project requirements. Not recommended for public/production use without switching to `password_hash()` / `password_verify()`.

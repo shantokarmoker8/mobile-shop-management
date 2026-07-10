@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 10, 2026 at 08:19 AM
+-- Generation Time: Jul 10, 2026 at 09:17 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -38,6 +38,13 @@ CREATE TABLE `cash_transactions` (
   `created_at` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `cash_transactions`
+--
+
+INSERT INTO `cash_transactions` (`id`, `type`, `amount`, `direction`, `reference_id`, `note`, `created_by`, `created_at`) VALUES
+(1, 'opening', 5000.00, 'in', NULL, 'Opening Balance', 1, '2026-07-10 13:09:56');
+
 -- --------------------------------------------------------
 
 --
@@ -51,6 +58,18 @@ CREATE TABLE `categories` (
   `status` enum('active','inactive') NOT NULL DEFAULT 'active',
   `created_at` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `categories`
+--
+
+INSERT INTO `categories` (`id`, `name`, `type`, `status`, `created_at`) VALUES
+(1, 'Smart Phone', 'mobile', 'active', '2026-07-10 13:07:55'),
+(2, 'Feature Phone', 'mobile', 'active', '2026-07-10 13:07:55'),
+(3, 'Charger', 'accessories', 'active', '2026-07-10 13:07:55'),
+(4, 'Cover & Case', 'accessories', 'active', '2026-07-10 13:07:55'),
+(5, 'Display', 'repair_parts', 'active', '2026-07-10 13:07:55'),
+(6, 'Battery', 'repair_parts', 'active', '2026-07-10 13:07:55');
 
 -- --------------------------------------------------------
 
@@ -109,6 +128,16 @@ CREATE TABLE `expense_categories` (
   `name` varchar(100) NOT NULL,
   `status` enum('active','inactive') NOT NULL DEFAULT 'active'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `expense_categories`
+--
+
+INSERT INTO `expense_categories` (`id`, `name`, `status`) VALUES
+(1, 'Rent', 'active'),
+(2, 'Electricity', 'active'),
+(3, 'Transport', 'active'),
+(4, 'Others', 'active');
 
 -- --------------------------------------------------------
 
@@ -217,13 +246,6 @@ CREATE TABLE `sale_returns` (
   `created_at` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Dumping data for table `sale_returns`
---
-
-INSERT INTO `sale_returns` (`id`, `sale_id`, `return_no`, `total_amount`, `note`, `created_by`, `created_at`) VALUES
-(1, 1, 'RET-20260710-0001', 38000.00, '', 1, '2026-07-10 03:32:19');
-
 -- --------------------------------------------------------
 
 --
@@ -239,13 +261,6 @@ CREATE TABLE `sale_return_items` (
   `price` decimal(10,2) NOT NULL,
   `total` decimal(10,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `sale_return_items`
---
-
-INSERT INTO `sale_return_items` (`id`, `sale_return_id`, `sale_item_id`, `product_id`, `quantity`, `price`, `total`) VALUES
-(1, 1, 1, 3, 1, 38000.00, 38000.00);
 
 -- --------------------------------------------------------
 
@@ -382,7 +397,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `full_name`, `username`, `password`, `phone`, `role`, `status`, `photo`, `created_at`, `updated_at`) VALUES
-(1, 'Admin', 'admin', 'admin', '', 'admin', 'active', NULL, '2026-07-09 01:01:58', '2026-07-10 03:39:05');
+(1, 'Admin', 'admin', 'admin123', NULL, 'admin', 'active', NULL, '2026-07-10 13:07:55', '2026-07-10 13:07:55');
 
 -- --------------------------------------------------------
 
@@ -580,13 +595,13 @@ ALTER TABLE `user_permissions`
 -- AUTO_INCREMENT for table `cash_transactions`
 --
 ALTER TABLE `cash_transactions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `customers`
@@ -610,13 +625,13 @@ ALTER TABLE `expenses`
 -- AUTO_INCREMENT for table `expense_categories`
 --
 ALTER TABLE `expense_categories`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `purchases`
@@ -646,13 +661,13 @@ ALTER TABLE `sale_items`
 -- AUTO_INCREMENT for table `sale_returns`
 --
 ALTER TABLE `sale_returns`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `sale_return_items`
 --
 ALTER TABLE `sale_return_items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `service_jobs`
@@ -688,7 +703,7 @@ ALTER TABLE `supplier_payments`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `user_permissions`

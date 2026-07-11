@@ -53,44 +53,46 @@ include __DIR__ . '/../includes/sidebar.php';
 
         <div class="card-panel mb-3">
             <form method="GET" class="row g-2">
-                <div class="col-md-4">
+                <div class="col-6 col-md-4">
                     <select name="stock" class="form-select form-select-sm">
                         <option value="">All Stock</option>
                         <option value="low" <?= $stock_filter === 'low' ? 'selected' : '' ?>>Low Stock</option>
                         <option value="out" <?= $stock_filter === 'out' ? 'selected' : '' ?>>Out of Stock</option>
                     </select>
                 </div>
-                <div class="col-md-4">
+                <div class="col-6 col-md-4">
                     <select name="category" class="form-select form-select-sm">
                         <option value="">All Categories</option>
                         <?php foreach ($categories as $cat): ?>
-                        <option value="<?= $cat['id'] ?>" <?= $category_filter == $cat['id'] ? 'selected' : '' ?>><?= htmlspecialchars($cat['name']) ?></option>
+                        <option value="<?= $cat['id'] ?>" <?= $category_filter == $cat['id'] ? 'selected' : '' ?>><?= h($cat['name']) ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
-                <div class="col-md-2">
+                <div class="col-6 col-md-2">
                     <button type="submit" class="btn btn-primary btn-sm w-100"><i class="bi bi-search me-1"></i>Filter</button>
                 </div>
-                <div class="col-md-2">
+                <div class="col-6 col-md-2">
                     <button type="button" class="btn btn-soft btn-sm w-100" onclick="window.print()"><i class="bi bi-printer me-1"></i>Print</button>
                 </div>
             </form>
         </div>
 
         <div class="row g-3 mb-3">
-            <div class="col-6 col-md-4">
-                <div class="stat-card"><div class="stat-value"><?= count($products) ?></div><div class="stat-label">Total Items</div></div>
+            <div class="col-4">
+                <div class="stat-card"><div class="stat-text"><div class="stat-value"><?= count($products) ?></div><div class="stat-label">Total Items</div></div></div>
             </div>
-            <div class="col-6 col-md-4">
-                <div class="stat-card"><div class="stat-value"><?= money($total_stock_value) ?></div><div class="stat-label">Stock Value (Cost)</div></div>
+            <div class="col-4">
+                <div class="stat-card"><div class="stat-text"><div class="stat-value"><?= money($total_stock_value) ?></div><div class="stat-label">Stock Value</div></div></div>
             </div>
-            <div class="col-6 col-md-4">
-                <div class="stat-card"><div class="stat-value text-success"><?= money($total_potential_sale) ?></div><div class="stat-label">Potential Sale Value</div></div>
+            <div class="col-4">
+                <div class="stat-card"><div class="stat-text"><div class="stat-value text-success"><?= money($total_potential_sale) ?></div><div class="stat-label">Potential Sale</div></div></div>
             </div>
         </div>
 
         <div class="card-panel">
-            <div class="table-responsive">
+
+            <!-- Desktop Table -->
+            <div class="table-responsive desktop-only-table">
                 <table class="table table-custom mb-0">
                     <thead>
                         <tr><th>Product</th><th>Category</th><th>Buy Price</th><th>Sell Price</th><th>Quantity</th><th>Stock Value</th></tr>
@@ -101,8 +103,8 @@ include __DIR__ . '/../includes/sidebar.php';
                         <?php endif; ?>
                         <?php foreach ($products as $p): ?>
                         <tr>
-                            <td><?= htmlspecialchars($p['name']) ?></td>
-                            <td><?= htmlspecialchars($p['category_name']) ?></td>
+                            <td><?= h($p['name']) ?></td>
+                            <td><?= h($p['category_name']) ?></td>
                             <td><?= money($p['buy_price']) ?></td>
                             <td><?= money($p['sell_price']) ?></td>
                             <td>
@@ -119,6 +121,39 @@ include __DIR__ . '/../includes/sidebar.php';
                         <?php endforeach; ?>
                     </tbody>
                 </table>
+            </div>
+
+            <!-- Mobile List -->
+            <div class="mlist">
+                <?php if (count($products) === 0): ?>
+                <div class="mlist-empty"><i class="bi bi-boxes d-block mb-2" style="font-size:24px;"></i>No products found.</div>
+                <?php endif; ?>
+
+                <?php foreach ($products as $p): ?>
+                <div class="mlist-item">
+                    <div class="mlist-link">
+                        <div class="mlist-avatar <?= $p['quantity'] <= 0 ? 'is-danger' : ($p['quantity'] <= $p['low_stock_qty'] ? 'is-warning' : '') ?>">
+                            <?= h(mb_substr($p['name'], 0, 1)) ?>
+                        </div>
+                        <div class="mlist-body">
+                            <div class="mlist-title"><?= h($p['name']) ?></div>
+                            <div class="mlist-sub"><?= h($p['category_name']) ?> · Sell: <?= money($p['sell_price']) ?></div>
+                        </div>
+                    </div>
+                    <div class="mlist-end">
+                        <?php if ($p['quantity'] <= 0): ?>
+                            <div class="mlist-value text-danger">0</div>
+                            <div class="mlist-meta">Out of Stock</div>
+                        <?php elseif ($p['quantity'] <= $p['low_stock_qty']): ?>
+                            <div class="mlist-value text-warning"><?= $p['quantity'] ?></div>
+                            <div class="mlist-meta">Low Stock</div>
+                        <?php else: ?>
+                            <div class="mlist-value"><?= $p['quantity'] ?></div>
+                            <div class="mlist-meta">In Stock</div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+                <?php endforeach; ?>
             </div>
         </div>
 

@@ -1,7 +1,7 @@
 <?php
 $current_report = basename($_SERVER['SCRIPT_NAME']);
 ?>
-<div class="d-flex gap-1 flex-wrap">
+<div class="report-tabs-scroll d-flex gap-1 flex-md-wrap">
     <a href="sales.php" class="btn btn-sm <?= $current_report === 'sales.php' ? 'btn-primary' : 'btn-soft' ?>">Sales</a>
     <a href="purchase.php" class="btn btn-sm <?= $current_report === 'purchase.php' ? 'btn-primary' : 'btn-soft' ?>">Purchase</a>
     <a href="service.php" class="btn btn-sm <?= $current_report === 'service.php' ? 'btn-primary' : 'btn-soft' ?>">Service</a>

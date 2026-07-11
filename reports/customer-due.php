@@ -23,11 +23,11 @@ include __DIR__ . '/../includes/sidebar.php';
         </div>
 
         <div class="row g-3 mb-3">
-            <div class="col-md-4">
-                <div class="stat-card"><div class="stat-value text-danger"><?= money($total_due) ?></div><div class="stat-label">Total Outstanding Due</div></div>
+            <div class="col-6">
+                <div class="stat-card"><div class="stat-text"><div class="stat-value text-danger"><?= money($total_due) ?></div><div class="stat-label">Total Outstanding Due</div></div></div>
             </div>
-            <div class="col-md-4">
-                <div class="stat-card"><div class="stat-value"><?= count($customers) ?></div><div class="stat-label">Customers with Due</div></div>
+            <div class="col-6">
+                <div class="stat-card"><div class="stat-text"><div class="stat-value"><?= count($customers) ?></div><div class="stat-label">Customers with Due</div></div></div>
             </div>
         </div>
 
@@ -35,7 +35,9 @@ include __DIR__ . '/../includes/sidebar.php';
             <div class="d-flex justify-content-end mb-2">
                 <button type="button" class="btn btn-soft btn-sm" onclick="window.print()"><i class="bi bi-printer me-1"></i>Print</button>
             </div>
-            <div class="table-responsive">
+
+            <!-- Desktop Table -->
+            <div class="table-responsive desktop-only-table">
                 <table class="table table-custom mb-0">
                     <thead>
                         <tr><th>Customer</th><th>Phone</th><th>Due Amount</th><th class="text-end">Action</th></tr>
@@ -46,8 +48,8 @@ include __DIR__ . '/../includes/sidebar.php';
                         <?php endif; ?>
                         <?php foreach ($customers as $c): ?>
                         <tr>
-                            <td><?= htmlspecialchars($c['name']) ?></td>
-                            <td><?= htmlspecialchars($c['phone']) ?></td>
+                            <td><?= h($c['name']) ?></td>
+                            <td><?= h($c['phone']) ?></td>
                             <td class="text-danger fw-semibold"><?= money($c['total_due']) ?></td>
                             <td class="text-end">
                                 <a href="<?= BASE_URL ?>customers/ledger.php?id=<?= $c['id'] ?>" class="btn btn-soft btn-sm">View Ledger</a>
@@ -63,6 +65,29 @@ include __DIR__ . '/../includes/sidebar.php';
                         </tr>
                     </tfoot>
                 </table>
+            </div>
+
+            <!-- Mobile List -->
+            <div class="mlist">
+                <?php if (count($customers) === 0): ?>
+                <div class="mlist-empty"><i class="bi bi-person-check d-block mb-2" style="font-size:24px;"></i>No outstanding customer due.</div>
+                <?php endif; ?>
+
+                <?php foreach ($customers as $c): ?>
+                <div class="mlist-item">
+                    <a href="<?= BASE_URL ?>customers/ledger.php?id=<?= $c['id'] ?>" class="mlist-link">
+                        <div class="mlist-avatar is-danger"><?= h(mb_substr($c['name'], 0, 1)) ?></div>
+                        <div class="mlist-body">
+                            <div class="mlist-title"><?= h($c['name']) ?></div>
+                            <div class="mlist-sub"><?= h($c['phone']) ?></div>
+                        </div>
+                    </a>
+                    <div class="mlist-end">
+                        <div class="mlist-value text-danger"><?= money($c['total_due']) ?></div>
+                        <div class="mlist-meta">Due</div>
+                    </div>
+                </div>
+                <?php endforeach; ?>
             </div>
         </div>
 

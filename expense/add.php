@@ -4,6 +4,8 @@ checkPermission($pdo, 'expense', 'add');
 
 $page_title = 'Add Expense';
 
+$current_cash = getCurrentCash($pdo);
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $category_id = (int)$_POST['category_id'];
     $amount = (float)$_POST['amount'];
@@ -11,6 +13,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($category_id <= 0 || $amount <= 0) {
         setFlash('error', 'Please select a category and enter a valid amount.');
+    } elseif ($amount > $current_cash) {
+        setFlash('error', 'Insufficient cash balance. Current cash: ' . money($current_cash) . '.');
     } else {
         $pdo->beginTransaction();
         try {
@@ -18,7 +22,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->execute([$category_id, $amount, $note, $_SESSION['user_id']]);
             $expense_id = $pdo->lastInsertId();
 
-            // Cash goes out for expense
             addCashTransaction($pdo, 'expense', $amount, 'out', $expense_id, $note ?: 'Expense', $_SESSION['user_id']);
 
             $pdo->commit();
@@ -47,6 +50,11 @@ include __DIR__ . '/../includes/sidebar.php';
 
         <div class="row justify-content-center">
             <div class="col-lg-6">
+                <div class="alert alert-info small mb-3">
+                    <i class="bi bi-wallet2 me-1"></i>
+                    Available Cash Balance: <strong><?= money($current_cash) ?></strong>
+                </div>
+
                 <div class="card-panel">
                     <form method="POST">
                         <div class="row g-3">
@@ -55,13 +63,13 @@ include __DIR__ . '/../includes/sidebar.php';
                                 <select name="category_id" class="form-select" required>
                                     <option value="">Select Category</option>
                                     <?php foreach ($categories as $cat): ?>
-                                    <option value="<?= $cat['id'] ?>"><?= htmlspecialchars($cat['name']) ?></option>
+                                    <option value="<?= $cat['id'] ?>"><?= h($cat['name']) ?></option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label small fw-semibold">Amount *</label>
-                                <input type="number" step="0.01" name="amount" class="form-control" required>
+                                <label class="form-label small fw-semibold">Amount * <span class="text-muted">(Max: <?= money($current_cash) ?>)</span></label>
+                                <input type="number" step="0.01" name="amount" class="form-control" max="<?= $current_cash ?>" required>
                             </div>
                             <div class="col-md-12">
                                 <label class="form-label small fw-semibold">Note</label>
@@ -70,7 +78,7 @@ include __DIR__ . '/../includes/sidebar.php';
                         </div>
 
                         <div class="mt-4">
-                            <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Save Expense</button>
+                            <button type="submit" class="btn btn-primary" <?= $current_cash <= 0 ? 'disabled' : '' ?>><i class="bi bi-check-lg me-1"></i>Save Expense</button>
                             <a href="index.php" class="btn btn-soft">Cancel</a>
                         </div>
                     </form>

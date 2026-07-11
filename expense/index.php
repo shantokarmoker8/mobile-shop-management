@@ -52,13 +52,13 @@ include __DIR__ . '/../includes/sidebar.php';
         <div class="card-panel mb-3">
             <form method="GET" class="row g-2">
                 <div class="col-md-4">
-                    <input type="text" name="search" class="form-control form-control-sm" placeholder="Search by note" value="<?= htmlspecialchars($search) ?>">
+                    <input type="text" name="search" class="form-control form-control-sm" placeholder="Search by note" value="<?= h($search) ?>">
                 </div>
                 <div class="col-md-3">
                     <select name="category" class="form-select form-select-sm">
                         <option value="">All Categories</option>
                         <?php foreach ($categories as $cat): ?>
-                        <option value="<?= $cat['id'] ?>" <?= $category_filter == $cat['id'] ? 'selected' : '' ?>><?= htmlspecialchars($cat['name']) ?></option>
+                        <option value="<?= $cat['id'] ?>" <?= $category_filter == $cat['id'] ? 'selected' : '' ?>><?= h($cat['name']) ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -70,38 +70,64 @@ include __DIR__ . '/../includes/sidebar.php';
 
         <div class="row g-3 mb-3">
             <div class="col-md-4">
-                <div class="stat-card"><div class="stat-value text-danger"><?= money($total_expense) ?></div><div class="stat-label">Total Expense (Filtered)</div></div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background:#e14343;"><i class="bi bi-receipt"></i></div>
+                    <div class="stat-text">
+                        <div class="stat-value"><?= money($total_expense) ?></div>
+                        <div class="stat-label">Total Expense (Filtered)</div>
+                    </div>
+                </div>
             </div>
         </div>
 
         <div class="card-panel">
-            <div class="table-responsive">
+
+            <!-- Desktop Table -->
+            <div class="table-responsive desktop-only-table">
                 <table class="table table-custom mb-0">
                     <thead>
                         <tr>
-                            <th>Date</th>
-                            <th>Category</th>
-                            <th>Note</th>
-                            <th>Amount</th>
-                            <th>Added By</th>
+                            <th>Date</th><th>Category</th><th>Note</th><th>Amount</th><th>Added By</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php if (count($expenses) === 0): ?>
                         <tr><td colspan="5" class="text-center text-muted py-4">No expenses found.</td></tr>
                         <?php endif; ?>
-
                         <?php foreach ($expenses as $e): ?>
                         <tr>
                             <td><?= formatDate($e['created_at']) ?></td>
-                            <td><?= htmlspecialchars($e['category_name'] ?: '-') ?></td>
-                            <td><?= htmlspecialchars($e['note'] ?: '-') ?></td>
+                            <td><?= h($e['category_name'] ?: '-') ?></td>
+                            <td><?= h($e['note'] ?: '-') ?></td>
                             <td class="text-danger fw-semibold"><?= money($e['amount']) ?></td>
-                            <td><?= htmlspecialchars($e['full_name'] ?? '-') ?></td>
+                            <td><?= h($e['full_name'] ?? '-') ?></td>
                         </tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
+            </div>
+
+            <!-- Mobile List -->
+            <div class="mlist">
+                <?php if (count($expenses) === 0): ?>
+                <div class="mlist-empty"><i class="bi bi-receipt d-block mb-2" style="font-size:24px;"></i>No expenses found.</div>
+                <?php endif; ?>
+
+                <?php foreach ($expenses as $e): ?>
+                <div class="mlist-item">
+                    <div class="mlist-link">
+                        <div class="mlist-avatar is-danger"><i class="bi bi-receipt"></i></div>
+                        <div class="mlist-body">
+                            <div class="mlist-title"><?= h($e['category_name'] ?: 'Uncategorized') ?></div>
+                            <div class="mlist-sub"><?= formatDate($e['created_at']) ?> <?= $e['note'] ? '· ' . h($e['note']) : '' ?></div>
+                        </div>
+                    </div>
+                    <div class="mlist-end">
+                        <div class="mlist-value text-danger"><?= money($e['amount']) ?></div>
+                        <div class="mlist-meta"><?= h($e['full_name'] ?? '-') ?></div>
+                    </div>
+                </div>
+                <?php endforeach; ?>
             </div>
         </div>
 

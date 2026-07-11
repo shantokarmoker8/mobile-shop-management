@@ -36,37 +36,39 @@ include __DIR__ . '/../includes/sidebar.php';
 
         <div class="card-panel mb-3">
             <form method="GET" class="row g-2">
-                <div class="col-md-4">
+                <div class="col-6 col-md-4">
                     <label class="form-label small fw-semibold">Start Date</label>
                     <input type="date" name="start_date" class="form-control form-control-sm" value="<?= $start_date ?>">
                 </div>
-                <div class="col-md-4">
+                <div class="col-6 col-md-4">
                     <label class="form-label small fw-semibold">End Date</label>
                     <input type="date" name="end_date" class="form-control form-control-sm" value="<?= $end_date ?>">
                 </div>
-                <div class="col-md-2 d-flex align-items-end">
+                <div class="col-6 col-md-2 d-flex align-items-end">
                     <button type="submit" class="btn btn-primary btn-sm w-100"><i class="bi bi-search me-1"></i>Filter</button>
                 </div>
-                <div class="col-md-2 d-flex align-items-end">
+                <div class="col-6 col-md-2 d-flex align-items-end">
                     <button type="button" class="btn btn-soft btn-sm w-100" onclick="window.print()"><i class="bi bi-printer me-1"></i>Print</button>
                 </div>
             </form>
         </div>
 
         <div class="row g-3 mb-3">
-            <div class="col-6 col-md-4">
-                <div class="stat-card"><div class="stat-value"><?= money($total_amount) ?></div><div class="stat-label">Total Purchase</div></div>
+            <div class="col-4">
+                <div class="stat-card"><div class="stat-text"><div class="stat-value"><?= money($total_amount) ?></div><div class="stat-label">Total Purchase</div></div></div>
             </div>
-            <div class="col-6 col-md-4">
-                <div class="stat-card"><div class="stat-value text-success"><?= money($total_paid) ?></div><div class="stat-label">Total Paid</div></div>
+            <div class="col-4">
+                <div class="stat-card"><div class="stat-text"><div class="stat-value text-success"><?= money($total_paid) ?></div><div class="stat-label">Total Paid</div></div></div>
             </div>
-            <div class="col-6 col-md-4">
-                <div class="stat-card"><div class="stat-value text-danger"><?= money($total_due) ?></div><div class="stat-label">Total Due</div></div>
+            <div class="col-4">
+                <div class="stat-card"><div class="stat-text"><div class="stat-value text-danger"><?= money($total_due) ?></div><div class="stat-label">Total Due</div></div></div>
             </div>
         </div>
 
         <div class="card-panel">
-            <div class="table-responsive">
+
+            <!-- Desktop Table -->
+            <div class="table-responsive desktop-only-table">
                 <table class="table table-custom mb-0">
                     <thead>
                         <tr><th>Invoice</th><th>Supplier</th><th>Date</th><th>Total</th><th>Paid</th><th>Due</th></tr>
@@ -77,8 +79,8 @@ include __DIR__ . '/../includes/sidebar.php';
                         <?php endif; ?>
                         <?php foreach ($purchases as $p): ?>
                         <tr>
-                            <td><?= htmlspecialchars($p['invoice_no']) ?></td>
-                            <td><?= htmlspecialchars($p['supplier_name']) ?></td>
+                            <td><?= h($p['invoice_no']) ?></td>
+                            <td><?= h($p['supplier_name']) ?></td>
                             <td><?= formatDate($p['created_at']) ?></td>
                             <td><?= money($p['total_amount']) ?></td>
                             <td><?= money($p['paid_amount']) ?></td>
@@ -95,6 +97,29 @@ include __DIR__ . '/../includes/sidebar.php';
                         </tr>
                     </tfoot>
                 </table>
+            </div>
+
+            <!-- Mobile List -->
+            <div class="mlist">
+                <?php if (count($purchases) === 0): ?>
+                <div class="mlist-empty"><i class="bi bi-cart-plus d-block mb-2" style="font-size:24px;"></i>No purchases found for this period.</div>
+                <?php endif; ?>
+
+                <?php foreach ($purchases as $p): ?>
+                <div class="mlist-item">
+                    <a href="<?= BASE_URL ?>purchase/view.php?id=<?= $p['id'] ?>" class="mlist-link">
+                        <div class="mlist-avatar is-warning"><i class="bi bi-cart-plus"></i></div>
+                        <div class="mlist-body">
+                            <div class="mlist-title"><?= h($p['invoice_no']) ?></div>
+                            <div class="mlist-sub"><?= h($p['supplier_name']) ?> · <?= formatDate($p['created_at']) ?></div>
+                        </div>
+                    </a>
+                    <div class="mlist-end">
+                        <div class="mlist-value"><?= money($p['total_amount']) ?></div>
+                        <div class="mlist-meta"><?= $p['due_amount'] > 0 ? 'Due: ' . money($p['due_amount']) : 'Paid' ?></div>
+                    </div>
+                </div>
+                <?php endforeach; ?>
             </div>
         </div>
 

@@ -37,7 +37,7 @@ include __DIR__ . '/../includes/sidebar.php';
         <div class="card-panel mb-3">
             <form method="GET" class="row g-2">
                 <div class="col-md-6">
-                    <input type="text" name="search" class="form-control form-control-sm" placeholder="Search by name or phone" value="<?= htmlspecialchars($search) ?>">
+                    <input type="text" name="search" class="form-control form-control-sm" placeholder="Search by name or phone" value="<?= h($search) ?>">
                 </div>
                 <div class="col-md-2">
                     <button type="submit" class="btn btn-primary btn-sm w-100"><i class="bi bi-search me-1"></i>Search</button>
@@ -45,7 +45,8 @@ include __DIR__ . '/../includes/sidebar.php';
             </form>
         </div>
 
-        <div class="card-panel">
+        <!-- Desktop Table -->
+        <div class="card-panel desktop-only-table">
             <div class="table-responsive">
                 <table class="table table-custom mb-0">
                     <thead>
@@ -61,12 +62,11 @@ include __DIR__ . '/../includes/sidebar.php';
                         <?php if (count($customers) === 0): ?>
                         <tr><td colspan="5" class="text-center text-muted py-4">No customers found.</td></tr>
                         <?php endif; ?>
-
                         <?php foreach ($customers as $c): ?>
                         <tr>
-                            <td class="fw-semibold"><?= htmlspecialchars($c['name']) ?></td>
-                            <td><?= htmlspecialchars($c['phone'] ?: '-') ?></td>
-                            <td><?= htmlspecialchars($c['address'] ?: '-') ?></td>
+                            <td class="fw-semibold"><?= h($c['name']) ?></td>
+                            <td><?= h($c['phone'] ?: '-') ?></td>
+                            <td><?= h($c['address'] ?: '-') ?></td>
                             <td>
                                 <?php if ($c['total_due'] > 0): ?>
                                     <span class="badge-status badge-due"><?= money($c['total_due']) ?></span>
@@ -83,6 +83,44 @@ include __DIR__ . '/../includes/sidebar.php';
                     </tbody>
                 </table>
             </div>
+        </div>
+
+        <!-- Mobile List -->
+        <div class="mlist">
+            <?php if (count($customers) === 0): ?>
+            <div class="mlist-empty"><i class="bi bi-people d-block mb-2" style="font-size:24px;"></i>No customers found.</div>
+            <?php endif; ?>
+
+            <?php foreach ($customers as $c): ?>
+            <div class="mlist-item">
+                <a href="ledger.php?id=<?= $c['id'] ?>" class="mlist-link">
+                    <div class="mlist-avatar"><?= h(mb_substr($c['name'], 0, 1)) ?></div>
+                    <div class="mlist-body">
+                        <div class="mlist-title"><?= h($c['name']) ?></div>
+                        <div class="mlist-sub"><?= h($c['phone'] ?: 'No phone') ?></div>
+                    </div>
+                </a>
+                <div class="mlist-end">
+                    <?php if ($c['total_due'] > 0): ?>
+                        <div class="mlist-value text-danger"><?= money($c['total_due']) ?></div>
+                        <div class="mlist-meta">Due</div>
+                    <?php else: ?>
+                        <div class="mlist-value text-success">Paid</div>
+                        <div class="mlist-meta">&nbsp;</div>
+                    <?php endif; ?>
+                </div>
+                <div class="dropdown">
+                    <button class="mlist-kebab" data-bs-toggle="dropdown"><i class="bi bi-three-dots-vertical"></i></button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="ledger.php?id=<?= $c['id'] ?>"><i class="bi bi-journal-text me-2"></i>View Ledger</a></li>
+                        <li><a class="dropdown-item" href="edit.php?id=<?= $c['id'] ?>"><i class="bi bi-pencil me-2"></i>Edit</a></li>
+                        <?php if ($c['total_due'] > 0): ?>
+                        <li><a class="dropdown-item" href="payment.php?id=<?= $c['id'] ?>"><i class="bi bi-cash me-2"></i>Collect Due</a></li>
+                        <?php endif; ?>
+                    </ul>
+                </div>
+            </div>
+            <?php endforeach; ?>
         </div>
 
     </div>

@@ -1,7 +1,6 @@
 <?php
 require_once __DIR__ . '/../includes/auth.php';
 
-// Staff module is admin-only
 if ($_SESSION['role'] !== 'admin') {
     echo '<div class="alert alert-danger m-4">You do not have permission to access this section.</div>';
     exit;
@@ -42,7 +41,7 @@ include __DIR__ . '/../includes/sidebar.php';
         <div class="card-panel mb-3">
             <form method="GET" class="row g-2">
                 <div class="col-md-6">
-                    <input type="text" name="search" class="form-control form-control-sm" placeholder="Search by name, username, or phone" value="<?= htmlspecialchars($search) ?>">
+                    <input type="text" name="search" class="form-control form-control-sm" placeholder="Search by name, username, or phone" value="<?= h($search) ?>">
                 </div>
                 <div class="col-md-2">
                     <button type="submit" class="btn btn-primary btn-sm w-100"><i class="bi bi-search me-1"></i>Search</button>
@@ -50,7 +49,8 @@ include __DIR__ . '/../includes/sidebar.php';
             </form>
         </div>
 
-        <div class="card-panel">
+        <!-- Desktop Table -->
+        <div class="card-panel desktop-only-table">
             <div class="table-responsive">
                 <table class="table table-custom mb-0">
                     <thead>
@@ -66,12 +66,11 @@ include __DIR__ . '/../includes/sidebar.php';
                         <?php if (count($staff) === 0): ?>
                         <tr><td colspan="5" class="text-center text-muted py-4">No staff found.</td></tr>
                         <?php endif; ?>
-
                         <?php foreach ($staff as $s): ?>
                         <tr>
-                            <td class="fw-semibold"><?= htmlspecialchars($s['full_name']) ?></td>
-                            <td><?= htmlspecialchars($s['username']) ?></td>
-                            <td><?= htmlspecialchars($s['phone'] ?: '-') ?></td>
+                            <td class="fw-semibold"><?= h($s['full_name']) ?></td>
+                            <td><?= h($s['username']) ?></td>
+                            <td><?= h($s['phone'] ?: '-') ?></td>
                             <td>
                                 <span class="badge-status <?= $s['status'] === 'active' ? 'badge-completed' : 'badge-due' ?>">
                                     <?= ucfirst($s['status']) ?>
@@ -86,6 +85,37 @@ include __DIR__ . '/../includes/sidebar.php';
                     </tbody>
                 </table>
             </div>
+        </div>
+
+        <!-- Mobile List -->
+        <div class="mlist">
+            <?php if (count($staff) === 0): ?>
+            <div class="mlist-empty"><i class="bi bi-person-badge d-block mb-2" style="font-size:24px;"></i>No staff found.</div>
+            <?php endif; ?>
+
+            <?php foreach ($staff as $s): ?>
+            <div class="mlist-item">
+                <a href="edit.php?id=<?= $s['id'] ?>" class="mlist-link">
+                    <div class="mlist-avatar <?= $s['status'] === 'active' ? '' : 'is-danger' ?>"><?= h(mb_substr($s['full_name'], 0, 1)) ?></div>
+                    <div class="mlist-body">
+                        <div class="mlist-title"><?= h($s['full_name']) ?></div>
+                        <div class="mlist-sub">@<?= h($s['username']) ?></div>
+                    </div>
+                </a>
+                <div class="mlist-end">
+                    <span class="badge-status <?= $s['status'] === 'active' ? 'badge-completed' : 'badge-due' ?>">
+                        <?= ucfirst($s['status']) ?>
+                    </span>
+                </div>
+                <div class="dropdown">
+                    <button class="mlist-kebab" data-bs-toggle="dropdown"><i class="bi bi-three-dots-vertical"></i></button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="permission.php?id=<?= $s['id'] ?>"><i class="bi bi-shield-lock me-2"></i>Permissions</a></li>
+                        <li><a class="dropdown-item" href="edit.php?id=<?= $s['id'] ?>"><i class="bi bi-pencil me-2"></i>Edit</a></li>
+                    </ul>
+                </div>
+            </div>
+            <?php endforeach; ?>
         </div>
 
     </div>

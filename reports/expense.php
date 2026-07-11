@@ -19,7 +19,6 @@ $expenses = $stmt->fetchAll();
 
 $total_expense = array_sum(array_column($expenses, 'amount'));
 
-// Category-wise breakdown
 $stmt = $pdo->prepare("SELECT ec.name, SUM(e.amount) as total FROM expenses e 
                         LEFT JOIN expense_categories ec ON e.category_id = ec.id 
                         WHERE e.created_at BETWEEN ? AND ? 
@@ -42,18 +41,18 @@ include __DIR__ . '/../includes/sidebar.php';
 
         <div class="card-panel mb-3">
             <form method="GET" class="row g-2">
-                <div class="col-md-4">
+                <div class="col-6 col-md-4">
                     <label class="form-label small fw-semibold">Start Date</label>
                     <input type="date" name="start_date" class="form-control form-control-sm" value="<?= $start_date ?>">
                 </div>
-                <div class="col-md-4">
+                <div class="col-6 col-md-4">
                     <label class="form-label small fw-semibold">End Date</label>
                     <input type="date" name="end_date" class="form-control form-control-sm" value="<?= $end_date ?>">
                 </div>
-                <div class="col-md-2 d-flex align-items-end">
+                <div class="col-6 col-md-2 d-flex align-items-end">
                     <button type="submit" class="btn btn-primary btn-sm w-100"><i class="bi bi-search me-1"></i>Filter</button>
                 </div>
-                <div class="col-md-2 d-flex align-items-end">
+                <div class="col-6 col-md-2 d-flex align-items-end">
                     <button type="button" class="btn btn-soft btn-sm w-100" onclick="window.print()"><i class="bi bi-printer me-1"></i>Print</button>
                 </div>
             </form>
@@ -61,14 +60,14 @@ include __DIR__ . '/../includes/sidebar.php';
 
         <div class="row g-3 mb-3">
             <div class="col-lg-4">
-                <div class="stat-card"><div class="stat-value text-danger"><?= money($total_expense) ?></div><div class="stat-label">Total Expense</div></div>
+                <div class="stat-card"><div class="stat-text"><div class="stat-value text-danger"><?= money($total_expense) ?></div><div class="stat-label">Total Expense</div></div></div>
             </div>
             <div class="col-lg-8">
                 <div class="card-panel">
                     <h6 class="fw-bold mb-2">Category Breakdown</h6>
                     <?php foreach ($category_breakdown as $cb): ?>
                     <div class="d-flex justify-content-between small mb-1">
-                        <span><?= htmlspecialchars($cb['name'] ?: 'Uncategorized') ?></span>
+                        <span><?= h($cb['name'] ?: 'Uncategorized') ?></span>
                         <strong><?= money($cb['total']) ?></strong>
                     </div>
                     <?php endforeach; ?>
@@ -80,7 +79,9 @@ include __DIR__ . '/../includes/sidebar.php';
         </div>
 
         <div class="card-panel">
-            <div class="table-responsive">
+
+            <!-- Desktop Table -->
+            <div class="table-responsive desktop-only-table">
                 <table class="table table-custom mb-0">
                     <thead>
                         <tr><th>Date</th><th>Category</th><th>Note</th><th>Amount</th></tr>
@@ -92,8 +93,8 @@ include __DIR__ . '/../includes/sidebar.php';
                         <?php foreach ($expenses as $e): ?>
                         <tr>
                             <td><?= formatDate($e['created_at']) ?></td>
-                            <td><?= htmlspecialchars($e['category_name']) ?></td>
-                            <td><?= htmlspecialchars($e['note'] ?: '-') ?></td>
+                            <td><?= h($e['category_name']) ?></td>
+                            <td><?= h($e['note'] ?: '-') ?></td>
                             <td class="text-danger"><?= money($e['amount']) ?></td>
                         </tr>
                         <?php endforeach; ?>
@@ -105,6 +106,28 @@ include __DIR__ . '/../includes/sidebar.php';
                         </tr>
                     </tfoot>
                 </table>
+            </div>
+
+            <!-- Mobile List -->
+            <div class="mlist">
+                <?php if (count($expenses) === 0): ?>
+                <div class="mlist-empty"><i class="bi bi-receipt d-block mb-2" style="font-size:24px;"></i>No expenses found for this period.</div>
+                <?php endif; ?>
+
+                <?php foreach ($expenses as $e): ?>
+                <div class="mlist-item">
+                    <div class="mlist-link">
+                        <div class="mlist-avatar is-danger"><i class="bi bi-receipt"></i></div>
+                        <div class="mlist-body">
+                            <div class="mlist-title"><?= h($e['category_name']) ?></div>
+                            <div class="mlist-sub"><?= formatDate($e['created_at']) ?> <?= $e['note'] ? '· ' . h($e['note']) : '' ?></div>
+                        </div>
+                    </div>
+                    <div class="mlist-end">
+                        <div class="mlist-value text-danger"><?= money($e['amount']) ?></div>
+                    </div>
+                </div>
+                <?php endforeach; ?>
             </div>
         </div>
 

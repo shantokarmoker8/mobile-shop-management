@@ -48,6 +48,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($paid_amount > $total_amount) {
         $paid_amount = $total_amount;
     }
+
+    // Cash safety check: paid amount cannot exceed the available cash balance
+    $current_cash = getCurrentCash($pdo);
+    if ($paid_amount > $current_cash) {
+        setFlash('error', 'Insufficient cash balance. Current cash: ' . money($current_cash) . '. Reduce the paid amount or keep the remaining as due.');
+        redirect(BASE_URL . 'purchase/add.php');
+    }
+
     $due_amount = $total_amount - $paid_amount;
 
     $pdo->beginTransaction();
@@ -92,6 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
+$current_cash = getCurrentCash($pdo);
 $suppliers = $pdo->query("SELECT * FROM suppliers WHERE status = 'active' ORDER BY name")->fetchAll();
 $products = $pdo->query("SELECT id, name, brand, buy_price, sell_price, quantity FROM products WHERE status = 'active' ORDER BY name")->fetchAll();
 $categories = $pdo->query("SELECT * FROM categories WHERE status = 'active' ORDER BY name")->fetchAll();
@@ -106,6 +115,11 @@ include __DIR__ . '/../includes/sidebar.php';
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h5 class="fw-bold mb-0">New Purchase</h5>
             <a href="index.php" class="btn btn-soft btn-sm"><i class="bi bi-arrow-left me-1"></i>Back to List</a>
+        </div>
+
+        <div class="alert alert-info small mb-3">
+            <i class="bi bi-wallet2 me-1"></i>
+            Available Cash Balance: <strong><?= money($current_cash) ?></strong> — Paid amount cannot exceed this.
         </div>
 
         <form method="POST" id="purchaseForm">
@@ -161,8 +175,8 @@ include __DIR__ . '/../includes/sidebar.php';
                         <input type="text" id="grandTotalDisplay" class="form-control fw-bold" readonly value="0.00">
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label small fw-semibold">Paid Amount *</label>
-                        <input type="number" step="0.01" name="paid_amount" id="paidAmount" class="form-control" value="0" required>
+                        <label class="form-label small fw-semibold">Paid Amount * <span class="text-muted">(Max: <?= money($current_cash) ?>)</span></label>
+                        <input type="number" step="0.01" name="paid_amount" id="paidAmount" class="form-control" value="0" max="<?= $current_cash ?>" required>
                     </div>
                     <div class="col-md-4">
                         <label class="form-label small fw-semibold">Due Amount</label>
@@ -243,6 +257,7 @@ include __DIR__ . '/../includes/sidebar.php';
 
 <script>
 let productsData = <?= json_encode($products) ?>;
+const availableCash = <?= (float)$current_cash ?>;
 
 function productOptions() {
     let opts = '<option value="">Select Product</option>';
@@ -315,7 +330,14 @@ function calcGrandTotal() {
 function calcDue() {
     const grand = parseFloat(document.getElementById('grandTotalDisplay').value) || 0;
     let paid = parseFloat(document.getElementById('paidAmount').value) || 0;
+
+    if (paid > availableCash) {
+        paid = availableCash;
+        document.getElementById('paidAmount').value = paid;
+        showToast('warning', 'Paid amount cannot exceed available cash (' + availableCash.toFixed(2) + ')');
+    }
     if (paid > grand) paid = grand;
+
     const due = grand - paid;
     document.getElementById('dueDisplay').value = due.toFixed(2);
 }
@@ -327,6 +349,12 @@ document.getElementById('purchaseForm').addEventListener('submit', function (e) 
     if (rows.length === 0) {
         e.preventDefault();
         showToast('error', 'Please add at least one product.');
+        return;
+    }
+    const paid = parseFloat(document.getElementById('paidAmount').value) || 0;
+    if (paid > availableCash) {
+        e.preventDefault();
+        showToast('error', 'Paid amount cannot exceed available cash.');
     }
 });
 

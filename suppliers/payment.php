@@ -15,6 +15,8 @@ if (!$supplier) {
     redirect(BASE_URL . 'suppliers/index.php');
 }
 
+$current_cash = getCurrentCash($pdo);
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $amount = (float)$_POST['amount'];
     $note = clean($_POST['note']);
@@ -23,12 +25,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         setFlash('error', 'Payment amount must be greater than zero.');
     } elseif ($amount > $supplier['total_due']) {
         setFlash('error', 'Payment amount cannot exceed current due.');
+    } elseif ($amount > $current_cash) {
+        setFlash('error', 'Insufficient cash balance. Current cash: ' . money($current_cash) . '.');
     } else {
         $pdo->beginTransaction();
         try {
             $remaining = $amount;
 
-            // Get all purchases with outstanding due for this supplier, oldest first (FIFO)
             $stmt = $pdo->prepare("SELECT id, invoice_no, due_amount, paid_amount FROM purchases WHERE supplier_id = ? AND due_amount > 0 ORDER BY created_at ASC");
             $stmt->execute([$id]);
             $unpaid_purchases = $stmt->fetchAll();
@@ -50,11 +53,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $remaining -= $pay_here;
             }
 
-            // Reduce supplier total due by full amount
             $stmt = $pdo->prepare("UPDATE suppliers SET total_due = total_due - ? WHERE id = ?");
             $stmt->execute([$amount, $id]);
 
-            // Single cash transaction for the whole payment
             addCashTransaction($pdo, 'supplier_payment', $amount, 'out', $id, 'Payment to ' . $supplier['name'], $_SESSION['user_id']);
 
             $pdo->commit();
@@ -75,7 +76,7 @@ include __DIR__ . '/../includes/sidebar.php';
 
     <div class="content-body">
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="fw-bold mb-0">Pay Due - <?= htmlspecialchars($supplier['name']) ?></h5>
+            <h5 class="fw-bold mb-0">Pay Due - <?= h($supplier['name']) ?></h5>
             <a href="ledger.php?id=<?= $id ?>" class="btn btn-soft btn-sm"><i class="bi bi-arrow-left me-1"></i>Back to Ledger</a>
         </div>
 
@@ -85,18 +86,24 @@ include __DIR__ . '/../includes/sidebar.php';
                     <div class="text-center mb-3">
                         <p class="text-muted small mb-1">Current Due</p>
                         <h3 class="text-danger fw-bold"><?= money($supplier['total_due']) ?></h3>
+                        <p class="text-muted small mb-0">Available Cash: <strong><?= money($current_cash) ?></strong></p>
                     </div>
+
+                    <?php if ($current_cash <= 0): ?>
+                    <div class="alert alert-warning small">You have no cash available to make a payment right now.</div>
+                    <?php endif; ?>
+
                     <form method="POST">
                         <div class="mb-3">
                             <label class="form-label small fw-semibold">Payment Amount *</label>
-                            <input type="number" step="0.01" max="<?= $supplier['total_due'] ?>" name="amount" class="form-control" required>
+                            <input type="number" step="0.01" max="<?= min($supplier['total_due'], $current_cash) ?>" name="amount" class="form-control" required <?= $current_cash <= 0 ? 'disabled' : '' ?>>
                         </div>
                         <div class="mb-3">
                             <label class="form-label small fw-semibold">Note</label>
                             <textarea name="note" class="form-control" rows="2" placeholder="Optional note"></textarea>
                         </div>
                         <p class="small text-muted">This will be applied to the oldest unpaid purchase invoices first.</p>
-                        <button type="submit" class="btn btn-primary w-100"><i class="bi bi-check-lg me-1"></i>Record Payment</button>
+                        <button type="submit" class="btn btn-primary w-100" <?= $current_cash <= 0 ? 'disabled' : '' ?>><i class="bi bi-check-lg me-1"></i>Record Payment</button>
                     </form>
                 </div>
             </div>

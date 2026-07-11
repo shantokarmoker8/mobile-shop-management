@@ -22,6 +22,8 @@ if ($purchase['due_amount'] <= 0) {
     redirect(BASE_URL . 'purchase/view.php?id=' . $id);
 }
 
+$current_cash = getCurrentCash($pdo);
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $amount = (float)$_POST['amount'];
     $note = clean($_POST['note']);
@@ -33,6 +35,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($amount > $purchase['due_amount']) {
         setFlash('error', 'Payment amount cannot exceed the due amount.');
+        redirect(BASE_URL . 'purchase/pay-due.php?id=' . $id);
+    }
+
+    if ($amount > $current_cash) {
+        setFlash('error', 'Insufficient cash balance. Current cash: ' . money($current_cash) . '.');
         redirect(BASE_URL . 'purchase/pay-due.php?id=' . $id);
     }
 
@@ -70,7 +77,7 @@ include __DIR__ . '/../includes/sidebar.php';
 
     <div class="content-body">
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="fw-bold mb-0">Pay Due - <?= htmlspecialchars($purchase['invoice_no']) ?></h5>
+            <h5 class="fw-bold mb-0">Pay Due - <?= h($purchase['invoice_no']) ?></h5>
             <a href="view.php?id=<?= $id ?>" class="btn btn-soft btn-sm"><i class="bi bi-arrow-left me-1"></i>Back</a>
         </div>
 
@@ -79,20 +86,26 @@ include __DIR__ . '/../includes/sidebar.php';
                 <div class="card-panel">
                     <div class="text-center mb-3">
                         <p class="text-muted small mb-1">Supplier</p>
-                        <p class="fw-semibold mb-2"><?= htmlspecialchars($purchase['supplier_name']) ?></p>
+                        <p class="fw-semibold mb-2"><?= h($purchase['supplier_name']) ?></p>
                         <p class="text-muted small mb-1">Due Amount</p>
                         <h3 class="text-danger fw-bold"><?= money($purchase['due_amount']) ?></h3>
+                        <p class="text-muted small mb-0">Available Cash: <strong><?= money($current_cash) ?></strong></p>
                     </div>
+
+                    <?php if ($current_cash <= 0): ?>
+                    <div class="alert alert-warning small">You have no cash available to make a payment right now.</div>
+                    <?php endif; ?>
+
                     <form method="POST">
                         <div class="mb-3">
                             <label class="form-label small fw-semibold">Payment Amount *</label>
-                            <input type="number" step="0.01" max="<?= $purchase['due_amount'] ?>" name="amount" class="form-control" required>
+                            <input type="number" step="0.01" max="<?= min($purchase['due_amount'], $current_cash) ?>" name="amount" class="form-control" required <?= $current_cash <= 0 ? 'disabled' : '' ?>>
                         </div>
                         <div class="mb-3">
                             <label class="form-label small fw-semibold">Note</label>
                             <textarea name="note" class="form-control" rows="2" placeholder="Optional note"></textarea>
                         </div>
-                        <button type="submit" class="btn btn-primary w-100"><i class="bi bi-check-lg me-1"></i>Record Payment</button>
+                        <button type="submit" class="btn btn-primary w-100" <?= $current_cash <= 0 ? 'disabled' : '' ?>><i class="bi bi-check-lg me-1"></i>Record Payment</button>
                     </form>
                 </div>
             </div>

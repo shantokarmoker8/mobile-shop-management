@@ -25,6 +25,12 @@ $summary = $stmt->fetch();
 
 $current_cash = getCurrentCash($pdo);
 
+$type_icons = [
+    'opening' => 'bi-flag', 'deposit' => 'bi-plus-circle', 'withdraw' => 'bi-dash-circle',
+    'sale' => 'bi-cash-coin', 'purchase' => 'bi-cart-plus', 'expense' => 'bi-receipt',
+    'customer_payment' => 'bi-person-check', 'supplier_payment' => 'bi-truck', 'refund' => 'bi-arrow-return-left'
+];
+
 include __DIR__ . '/../includes/header.php';
 include __DIR__ . '/../includes/sidebar.php';
 ?>
@@ -40,18 +46,18 @@ include __DIR__ . '/../includes/sidebar.php';
 
         <div class="card-panel mb-3">
             <form method="GET" class="row g-2">
-                <div class="col-md-4">
+                <div class="col-6 col-md-4">
                     <label class="form-label small fw-semibold">Start Date</label>
                     <input type="date" name="start_date" class="form-control form-control-sm" value="<?= $start_date ?>">
                 </div>
-                <div class="col-md-4">
+                <div class="col-6 col-md-4">
                     <label class="form-label small fw-semibold">End Date</label>
                     <input type="date" name="end_date" class="form-control form-control-sm" value="<?= $end_date ?>">
                 </div>
-                <div class="col-md-2 d-flex align-items-end">
+                <div class="col-6 col-md-2 d-flex align-items-end">
                     <button type="submit" class="btn btn-primary btn-sm w-100"><i class="bi bi-search me-1"></i>Filter</button>
                 </div>
-                <div class="col-md-2 d-flex align-items-end">
+                <div class="col-6 col-md-2 d-flex align-items-end">
                     <button type="button" class="btn btn-soft btn-sm w-100" onclick="window.print()"><i class="bi bi-printer me-1"></i>Print</button>
                 </div>
             </form>
@@ -59,22 +65,24 @@ include __DIR__ . '/../includes/sidebar.php';
 
         <div class="row g-3 mb-3">
             <div class="col-6 col-md-3">
-                <div class="stat-card"><div class="stat-value text-primary"><?= money($current_cash) ?></div><div class="stat-label">Current Cash</div></div>
+                <div class="stat-card"><div class="stat-text"><div class="stat-value text-primary"><?= money($current_cash) ?></div><div class="stat-label">Current Cash</div></div></div>
             </div>
             <div class="col-6 col-md-3">
-                <div class="stat-card"><div class="stat-value text-success"><?= money($summary['total_in'] ?? 0) ?></div><div class="stat-label">Total Cash In</div></div>
+                <div class="stat-card"><div class="stat-text"><div class="stat-value text-success"><?= money($summary['total_in'] ?? 0) ?></div><div class="stat-label">Total Cash In</div></div></div>
             </div>
             <div class="col-6 col-md-3">
-                <div class="stat-card"><div class="stat-value text-danger"><?= money($summary['total_out'] ?? 0) ?></div><div class="stat-label">Total Cash Out</div></div>
+                <div class="stat-card"><div class="stat-text"><div class="stat-value text-danger"><?= money($summary['total_out'] ?? 0) ?></div><div class="stat-label">Total Cash Out</div></div></div>
             </div>
             <div class="col-6 col-md-3">
-                <div class="stat-card"><div class="stat-value"><?= money(($summary['total_in'] ?? 0) - ($summary['total_out'] ?? 0)) ?></div><div class="stat-label">Net Change (Period)</div></div>
+                <div class="stat-card"><div class="stat-text"><div class="stat-value"><?= money(($summary['total_in'] ?? 0) - ($summary['total_out'] ?? 0)) ?></div><div class="stat-label">Net Change</div></div></div>
             </div>
         </div>
 
         <div class="card-panel">
             <h6 class="fw-bold mb-3">Breakdown by Type</h6>
-            <div class="table-responsive">
+
+            <!-- Desktop Table -->
+            <div class="table-responsive desktop-only-table">
                 <table class="table table-custom mb-0">
                     <thead>
                         <tr><th>Type</th><th>Direction</th><th>Amount</th></tr>
@@ -98,6 +106,30 @@ include __DIR__ . '/../includes/sidebar.php';
                         <?php endforeach; ?>
                     </tbody>
                 </table>
+            </div>
+
+            <!-- Mobile List -->
+            <div class="mlist">
+                <?php if (count($breakdown) === 0): ?>
+                <div class="mlist-empty"><i class="bi bi-wallet2 d-block mb-2" style="font-size:24px;"></i>No transactions found for this period.</div>
+                <?php endif; ?>
+
+                <?php foreach ($breakdown as $b): ?>
+                <div class="mlist-item">
+                    <div class="mlist-link">
+                        <div class="mlist-avatar <?= $b['direction'] === 'in' ? 'is-success' : 'is-danger' ?>">
+                            <i class="bi <?= $type_icons[$b['type']] ?? 'bi-cash' ?>"></i>
+                        </div>
+                        <div class="mlist-body">
+                            <div class="mlist-title"><?= ucfirst(str_replace('_',' ',$b['type'])) ?></div>
+                            <div class="mlist-sub"><?= $b['direction'] === 'in' ? 'Cash In' : 'Cash Out' ?></div>
+                        </div>
+                    </div>
+                    <div class="mlist-end">
+                        <div class="mlist-value <?= $b['direction'] === 'in' ? 'text-success' : 'text-danger' ?>"><?= money($b['total']) ?></div>
+                    </div>
+                </div>
+                <?php endforeach; ?>
             </div>
         </div>
 

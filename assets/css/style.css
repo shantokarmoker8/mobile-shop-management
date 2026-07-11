@@ -216,7 +216,7 @@ a {
 }
 
 /* ================================================
-   Sidebar Overlay (mobile backdrop when sidebar is open)
+   Sidebar Overlay
 ================================================ */
 .sidebar-overlay {
   display: none;
@@ -497,8 +497,15 @@ a {
   border-bottom: 1px solid var(--border);
 }
 
+@media (max-width: 767px) {
+  .table-mobile-hide-desktop-cells {
+    display: none;
+  }
+}
+
 /* ================================================
-   Mobile Card-Table Pattern (list pages: Product, Purchase, Sales, Service)
+   Mobile Card List Pattern (Product, Purchase, Sales, Service)
+   Simple stacked label:value cards
 ================================================ */
 @media (max-width: 767px) {
   .table-mobile-cards thead {
@@ -512,31 +519,31 @@ a {
     width: 100%;
   }
   .table-mobile-cards tr {
-    margin-bottom: 12px;
+    margin-bottom: 10px;
     border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 12px 14px;
+    border-radius: 10px;
+    padding: 10px 12px;
     background: var(--white);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
   }
-  .table-mobile-cards td {
+  .table-mobile-cards td[data-label] {
     border: none;
-    padding: 5px 0;
+    padding: 4px 0;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 12.5px;
+    font-size: 12px;
   }
-  .table-mobile-cards td::before {
+  .table-mobile-cards td[data-label]::before {
     content: attr(data-label);
     font-weight: 600;
     color: var(--text-muted);
-    font-size: 11px;
+    font-size: 10.5px;
     margin-right: 10px;
     flex-shrink: 0;
   }
   .table-mobile-cards td.cell-title {
-    font-size: 14.5px;
+    font-size: 14px;
     font-weight: 700;
     padding-bottom: 8px;
     margin-bottom: 6px;
@@ -615,12 +622,133 @@ a {
     border-radius: 8px;
     padding: 8px !important;
   }
-  .items-table-mobile .row-2col {
-    display: flex;
-    gap: 10px;
+}
+
+/* ================================================
+   MLIST — App-style list card
+   (Beneficiary: Customers/Suppliers/Staff, Cash, Expense, Reports)
+================================================ */
+.mlist {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mlist-item {
+  display: flex;
+  align-items: center;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 9px 6px 9px 10px;
+  gap: 4px;
+}
+
+.mlist-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+  color: inherit;
+}
+
+.mlist-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: var(--primary-light);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13.5px;
+  font-weight: 700;
+  flex-shrink: 0;
+  text-transform: uppercase;
+}
+.mlist-avatar i {
+  font-size: 16px;
+}
+.mlist-avatar.is-danger {
+  background: #fde2e2;
+  color: #b91c1c;
+}
+.mlist-avatar.is-success {
+  background: #dcfce7;
+  color: #15803d;
+}
+.mlist-avatar.is-warning {
+  background: #fff3d6;
+  color: #a8720a;
+}
+
+.mlist-body {
+  flex: 1;
+  min-width: 0;
+}
+.mlist-title {
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mlist-sub {
+  font-size: 10.8px;
+  color: var(--text-muted);
+  margin-top: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mlist-end {
+  text-align: right;
+  flex-shrink: 0;
+  padding-left: 6px;
+}
+.mlist-value {
+  font-size: 12.5px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.mlist-meta {
+  font-size: 9.5px;
+  color: var(--text-muted);
+  margin-top: 2px;
+  white-space: nowrap;
+}
+
+.mlist-kebab {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 17px;
+  padding: 6px 8px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+.mlist-kebab:active {
+  color: var(--primary);
+}
+
+.mlist-empty {
+  text-align: center;
+  padding: 30px 10px;
+  color: var(--text-muted);
+  font-size: 12.5px;
+}
+
+/* Hide desktop-only table on mobile, hide mlist on desktop */
+@media (max-width: 767px) {
+  .desktop-only-table {
+    display: none !important;
   }
-  .items-table-mobile .row-2col > div {
-    flex: 1;
+}
+@media (min-width: 768px) {
+  .mlist {
+    display: none !important;
   }
 }
 
@@ -682,6 +810,13 @@ a {
 .badge-returned {
   background: #ede9fe;
   color: #6d28d9;
+}
+
+@media (max-width: 767px) {
+  .badge-status {
+    font-size: 9.5px;
+    padding: 3px 8px;
+  }
 }
 
 /* ================================================
@@ -807,16 +942,11 @@ a {
     padding-bottom: 80px;
   }
 
-  /* When the sidebar is open on mobile, hide the bottom nav completely
-       so it can never sit on top of / block sidebar items like Settings/Logout */
   body.sidebar-open .mobile-bottom-nav {
     display: none;
   }
 }
 
-/* ================================================
-   Sidebar bottom spacing (extra safety, even though bottom nav is hidden when open)
-================================================ */
 @media (max-width: 991px) {
   .sidebar-menu {
     padding-bottom: 30px;
@@ -863,6 +993,23 @@ a {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+}
+
+/* ================================================
+   Report tab nav - horizontal scroll on mobile
+================================================ */
+@media (max-width: 767px) {
+  .report-tabs-scroll {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    gap: 6px;
+    padding-bottom: 4px;
+  }
+  .report-tabs-scroll .btn {
+    flex-shrink: 0;
   }
 }
 

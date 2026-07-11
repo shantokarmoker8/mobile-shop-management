@@ -12,7 +12,7 @@ $beneficiary_open = in_array($current_folder, $beneficiary_folders);
 <aside class="sidebar" id="sidebar">
     <div class="sidebar-brand">
         <img src="<?= BASE_URL ?>assets/logo.png" alt="Logo">
-        <span class="brand-text"><?= htmlspecialchars($settings['shop_name'] ?? APP_NAME) ?></span>
+        <span class="brand-text"><?= h($settings['shop_name'] ?? APP_NAME) ?></span>
     </div>
 
     <nav class="sidebar-menu">
@@ -79,3 +79,5 @@ $beneficiary_open = in_array($current_folder, $beneficiary_folders);
         </a>
     </nav>
 </aside>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>

@@ -132,7 +132,7 @@ include __DIR__ . '/../includes/sidebar.php';
                                     <select name="customer_id" id="customerSelect" class="form-select">
                                         <option value="">Walk-in Customer</option>
                                         <?php foreach ($customers as $c): ?>
-                                        <option value="<?= $c['id'] ?>"><?= htmlspecialchars($c['name']) ?> - <?= htmlspecialchars($c['phone']) ?></option>
+                                        <option value="<?= $c['id'] ?>"><?= h($c['name']) ?> - <?= h($c['phone']) ?></option>
                                         <?php endforeach; ?>
                                     </select>
                                     <button type="button" class="btn btn-soft" data-bs-toggle="modal" data-bs-target="#quickAddCustomerModal" title="Add New Customer">
@@ -156,11 +156,11 @@ include __DIR__ . '/../includes/sidebar.php';
                     <div class="card-panel">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h6 class="fw-bold mb-0">Products</h6>
-                            <button type="button" class="btn btn-soft btn-sm" onclick="addRow()"><i class="bi bi-plus-lg me-1"></i>Add Product</button>
+                            <button type="button" class="btn btn-primary btn-sm" onclick="addRow()"><i class="bi bi-plus-lg me-1"></i>Add Product</button>
                         </div>
 
                         <div class="table-responsive">
-                            <table class="table table-custom mb-0" id="itemsTable">
+                            <table class="table table-custom items-table-mobile mb-0" id="itemsTable">
                                 <thead>
                                     <tr>
                                         <th style="width:35%">Product</th>
@@ -257,16 +257,16 @@ function addRow() {
     const tr = document.createElement('tr');
     tr.className = 'calc-row';
     tr.innerHTML = `
-        <td>
-            <select name="product_id[]" class="form-select form-select-sm product-select" required onchange="onProductChange(this)">
+        <td data-label="Product">
+            <select name="product_id[]" class="form-select product-select" required onchange="onProductChange(this)">
                 ${productOptions()}
             </select>
         </td>
-        <td><input type="text" class="form-control form-control-sm stock-display" readonly value="-"></td>
-        <td><input type="number" name="quantity[]" class="form-control form-control-sm qty-input" value="1" min="1" required oninput="calcRow(this)"></td>
-        <td><input type="number" step="0.01" name="sell_price[]" class="form-control form-control-sm price-input" value="0" required oninput="calcRow(this)"></td>
-        <td><input type="text" class="form-control form-control-sm total-display" readonly value="0.00"></td>
-        <td><button type="button" class="btn btn-sm btn-outline-danger" onclick="removeRow(this)"><i class="bi bi-trash"></i></button></td>
+        <td data-label="Available Stock"><input type="text" class="form-control stock-display" readonly value="-"></td>
+        <td data-label="Quantity"><input type="number" name="quantity[]" class="form-control qty-input" value="1" min="1" required oninput="calcRow(this)"></td>
+        <td data-label="Price"><input type="number" step="0.01" name="sell_price[]" class="form-control price-input" value="0" required oninput="calcRow(this)"></td>
+        <td data-label="Total" class="cell-total"><input type="text" class="form-control total-display fw-bold" readonly value="0.00"></td>
+        <td class="cell-remove"><button type="button" class="btn btn-sm btn-outline-danger" onclick="removeRow(this)"><i class="bi bi-trash"></i></button></td>
     `;
     tbody.appendChild(tr);
 }
@@ -341,10 +341,7 @@ function quickAddCustomer() {
     const name = document.getElementById('quickCustomerName').value.trim();
     const phone = document.getElementById('quickCustomerPhone').value.trim();
 
-    if (name === '') {
-        showToast('error', 'Customer name is required.');
-        return;
-    }
+    if (name === '') { showToast('error', 'Customer name is required.'); return; }
 
     const formData = new FormData();
     formData.append('name', name);
@@ -364,9 +361,7 @@ function quickAddCustomer() {
             document.getElementById('quickCustomerName').value = '';
             document.getElementById('quickCustomerPhone').value = '';
 
-            const modal = bootstrap.Modal.getInstance(document.getElementById('quickAddCustomerModal'));
-            modal.hide();
-
+            bootstrap.Modal.getInstance(document.getElementById('quickAddCustomerModal')).hide();
             showToast('success', 'Customer added successfully.');
         } else {
             showToast('error', data.message || 'Failed to add customer.');

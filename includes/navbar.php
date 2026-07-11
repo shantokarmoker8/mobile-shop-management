@@ -1,6 +1,6 @@
 <header class="topbar">
     <div class="d-flex align-items-center">
-        <button class="btn-toggle-sidebar" id="sidebarToggle">
+        <button class="btn-toggle-sidebar d-none d-lg-block" id="sidebarToggle">
             <i class="bi bi-list"></i>
         </button>
         <h6 class="topbar-title mb-0"><?= h($page_title ?? '') ?></h6>

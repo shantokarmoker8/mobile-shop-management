@@ -169,11 +169,11 @@ include __DIR__ . '/../includes/sidebar.php';
                     <div class="card-panel">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h6 class="fw-bold mb-0">Used Repair Parts</h6>
-                            <button type="button" class="btn btn-soft btn-sm" onclick="addPartRow()"><i class="bi bi-plus-lg me-1"></i>Add Part</button>
+                            <button type="button" class="btn btn-primary btn-sm" onclick="addPartRow()"><i class="bi bi-plus-lg me-1"></i>Add Part</button>
                         </div>
 
                         <div class="table-responsive">
-                            <table class="table table-custom mb-0" id="partsTable">
+                            <table class="table table-custom items-table-mobile mb-0" id="partsTable">
                                 <thead>
                                     <tr>
                                         <th style="width:40%">Part</th>
@@ -280,16 +280,16 @@ function addPartRow() {
     const tr = document.createElement('tr');
     tr.className = 'calc-row';
     tr.innerHTML = `
-        <td>
-            <select name="part_product_id[]" class="form-select form-select-sm part-select" onchange="onPartChange(this)">
+        <td data-label="Part">
+            <select name="part_product_id[]" class="form-select part-select" onchange="onPartChange(this)">
                 ${partOptions()}
             </select>
         </td>
-        <td><input type="text" class="form-control form-control-sm stock-display" readonly value="-"></td>
-        <td><input type="number" name="part_quantity[]" class="form-control form-control-sm qty-input" value="1" min="1" oninput="calcPartRow(this)"></td>
-        <td><input type="number" step="0.01" name="part_price[]" class="form-control form-control-sm price-input" value="0" oninput="calcPartRow(this)"></td>
-        <td><input type="text" class="form-control form-control-sm total-display" readonly value="0.00"></td>
-        <td><button type="button" class="btn btn-sm btn-outline-danger" onclick="removePartRow(this)"><i class="bi bi-trash"></i></button></td>
+        <td data-label="Available Stock"><input type="text" class="form-control stock-display" readonly value="-"></td>
+        <td data-label="Quantity"><input type="number" name="part_quantity[]" class="form-control qty-input" value="1" min="1" oninput="calcPartRow(this)"></td>
+        <td data-label="Price"><input type="number" step="0.01" name="part_price[]" class="form-control price-input" value="0" oninput="calcPartRow(this)"></td>
+        <td data-label="Total" class="cell-total"><input type="text" class="form-control total-display fw-bold" readonly value="0.00"></td>
+        <td class="cell-remove"><button type="button" class="btn btn-sm btn-outline-danger" onclick="removePartRow(this)"><i class="bi bi-trash"></i></button></td>
     `;
     tbody.appendChild(tr);
 }
@@ -381,10 +381,7 @@ function quickAddCustomer() {
     const name = document.getElementById('quickCustomerName').value.trim();
     const phone = document.getElementById('quickCustomerPhone').value.trim();
 
-    if (name === '') {
-        showToast('error', 'Customer name is required.');
-        return;
-    }
+    if (name === '') { showToast('error', 'Customer name is required.'); return; }
 
     const formData = new FormData();
     formData.append('name', name);
@@ -409,9 +406,7 @@ function quickAddCustomer() {
             document.getElementById('quickCustomerName').value = '';
             document.getElementById('quickCustomerPhone').value = '';
 
-            const modal = bootstrap.Modal.getInstance(document.getElementById('quickAddCustomerModal'));
-            modal.hide();
-
+            bootstrap.Modal.getInstance(document.getElementById('quickAddCustomerModal')).hide();
             showToast('success', 'Customer added successfully.');
         } else {
             showToast('error', data.message || 'Failed to add customer.');

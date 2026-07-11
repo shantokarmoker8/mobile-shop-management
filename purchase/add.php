@@ -64,7 +64,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             updateStock($pdo, $item['product_id'], $item['quantity'], 'increase');
 
-            // Update product's current buy price, and sell price if provided
             if ($item['sell_price'] > 0) {
                 $stmt = $pdo->prepare("UPDATE products SET buy_price = ?, sell_price = ? WHERE id = ?");
                 $stmt->execute([$item['buy_price'], $item['sell_price'], $item['product_id']]);
@@ -118,7 +117,7 @@ include __DIR__ . '/../includes/sidebar.php';
                             <select name="supplier_id" id="supplierSelect" class="form-select" required>
                                 <option value="">Select Supplier</option>
                                 <?php foreach ($suppliers as $s): ?>
-                                <option value="<?= $s['id'] ?>"><?= htmlspecialchars($s['name']) ?></option>
+                                <option value="<?= $s['id'] ?>"><?= h($s['name']) ?></option>
                                 <?php endforeach; ?>
                             </select>
                             <button type="button" class="btn btn-soft" data-bs-toggle="modal" data-bs-target="#quickAddSupplierModal" title="Add New Supplier">
@@ -130,16 +129,16 @@ include __DIR__ . '/../includes/sidebar.php';
             </div>
 
             <div class="card-panel mb-3">
-                <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
                     <h6 class="fw-bold mb-0">Products</h6>
                     <div class="d-flex gap-2">
                         <button type="button" class="btn btn-soft btn-sm" data-bs-toggle="modal" data-bs-target="#quickAddProductModal"><i class="bi bi-plus-lg me-1"></i>New Product</button>
-                        <button type="button" class="btn btn-soft btn-sm" onclick="addRow()"><i class="bi bi-plus-lg me-1"></i>Add Row</button>
+                        <button type="button" class="btn btn-primary btn-sm" onclick="addRow()"><i class="bi bi-plus-lg me-1"></i>Add Row</button>
                     </div>
                 </div>
 
                 <div class="table-responsive">
-                    <table class="table table-custom mb-0" id="itemsTable">
+                    <table class="table table-custom items-table-mobile mb-0" id="itemsTable">
                         <thead>
                             <tr>
                                 <th style="width:28%">Product</th>
@@ -172,8 +171,8 @@ include __DIR__ . '/../includes/sidebar.php';
                 </div>
 
                 <div class="mt-4">
-                    <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Save Purchase</button>
-                    <a href="index.php" class="btn btn-soft">Cancel</a>
+                    <button type="submit" class="btn btn-primary w-100 w-md-auto"><i class="bi bi-check-lg me-1"></i>Save Purchase</button>
+                    <a href="index.php" class="btn btn-soft d-none d-md-inline-block">Cancel</a>
                 </div>
             </div>
         </form>
@@ -228,7 +227,7 @@ include __DIR__ . '/../includes/sidebar.php';
                     <select id="quickProductCategory" class="form-select" required>
                         <option value="">Select Category</option>
                         <?php foreach ($categories as $cat): ?>
-                        <option value="<?= $cat['id'] ?>"><?= htmlspecialchars($cat['name']) ?></option>
+                        <option value="<?= $cat['id'] ?>"><?= h($cat['name']) ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -253,16 +252,12 @@ function productOptions() {
     return opts;
 }
 
-function refreshAllProductDropdowns(selectId = null) {
+function refreshAllProductDropdowns() {
     document.querySelectorAll('.product-select').forEach(sel => {
         const currentVal = sel.value;
         sel.innerHTML = productOptions();
         if (currentVal) sel.value = currentVal;
     });
-    if (selectId) {
-        const newRowSelect = document.querySelector('#itemsBody tr:last-child .product-select');
-        if (newRowSelect) newRowSelect.value = selectId;
-    }
 }
 
 function addRow() {
@@ -270,16 +265,16 @@ function addRow() {
     const tr = document.createElement('tr');
     tr.className = 'calc-row';
     tr.innerHTML = `
-        <td>
-            <select name="product_id[]" class="form-select form-select-sm product-select" required onchange="onProductChange(this)">
+        <td data-label="Product">
+            <select name="product_id[]" class="form-select product-select" required onchange="onProductChange(this)">
                 ${productOptions()}
             </select>
         </td>
-        <td><input type="number" name="quantity[]" class="form-control form-control-sm qty-input" value="1" min="1" required oninput="calcRow(this)"></td>
-        <td><input type="number" step="0.01" name="buy_price[]" class="form-control form-control-sm price-input" value="0" required oninput="calcRow(this)"></td>
-        <td><input type="number" step="0.01" name="sell_price[]" class="form-control form-control-sm sell-price-input" value="0" required></td>
-        <td><input type="text" class="form-control form-control-sm total-display" readonly value="0.00"></td>
-        <td><button type="button" class="btn btn-sm btn-outline-danger" onclick="removeRow(this)"><i class="bi bi-trash"></i></button></td>
+        <td data-label="Quantity"><input type="number" name="quantity[]" class="form-control qty-input" value="1" min="1" required oninput="calcRow(this)"></td>
+        <td data-label="Buy Price"><input type="number" step="0.01" name="buy_price[]" class="form-control price-input" value="0" required oninput="calcRow(this)"></td>
+        <td data-label="Sell Price"><input type="number" step="0.01" name="sell_price[]" class="form-control sell-price-input" value="0" required></td>
+        <td data-label="Total" class="cell-total"><input type="text" class="form-control total-display fw-bold" readonly value="0.00"></td>
+        <td class="cell-remove"><button type="button" class="btn btn-sm btn-outline-danger" onclick="removeRow(this)"><i class="bi bi-trash"></i></button></td>
     `;
     tbody.appendChild(tr);
     return tr;
@@ -339,10 +334,7 @@ function quickAddSupplier() {
     const name = document.getElementById('quickSupplierName').value.trim();
     const phone = document.getElementById('quickSupplierPhone').value.trim();
 
-    if (name === '') {
-        showToast('error', 'Supplier name is required.');
-        return;
-    }
+    if (name === '') { showToast('error', 'Supplier name is required.'); return; }
 
     const formData = new FormData();
     formData.append('name', name);
@@ -376,10 +368,7 @@ function quickAddProduct() {
     const brand = document.getElementById('quickProductBrand').value.trim();
     const category_id = document.getElementById('quickProductCategory').value;
 
-    if (name === '' || category_id === '') {
-        showToast('error', 'Product name and category are required.');
-        return;
-    }
+    if (name === '' || category_id === '') { showToast('error', 'Product name and category are required.'); return; }
 
     const formData = new FormData();
     formData.append('name', name);

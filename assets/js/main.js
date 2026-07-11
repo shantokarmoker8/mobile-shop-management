@@ -1,29 +1,47 @@
 // ================================================
-// Sidebar Toggle (Mobile)
+// Sidebar Toggle (Mobile) + Overlay + Body Lock
 // ================================================
 document.addEventListener("DOMContentLoaded", function () {
   const toggleBtn = document.getElementById("sidebarToggle");
   const mobileMoreBtn = document.getElementById("mobileMoreBtn");
   const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("sidebarOverlay");
+
+  function openSidebar() {
+    if (sidebar) sidebar.classList.add("show");
+    if (overlay) overlay.classList.add("show");
+    document.body.classList.add("sidebar-open");
+  }
+
+  function closeSidebar() {
+    if (sidebar) sidebar.classList.remove("show");
+    if (overlay) overlay.classList.remove("show");
+    document.body.classList.remove("sidebar-open");
+  }
 
   function toggleSidebar() {
-    if (sidebar) sidebar.classList.toggle("show");
+    if (sidebar && sidebar.classList.contains("show")) {
+      closeSidebar();
+    } else {
+      openSidebar();
+    }
   }
 
   if (toggleBtn) toggleBtn.addEventListener("click", toggleSidebar);
   if (mobileMoreBtn) mobileMoreBtn.addEventListener("click", toggleSidebar);
+  if (overlay) overlay.addEventListener("click", closeSidebar);
 
+  // Close sidebar automatically when a menu link inside it is tapped (mobile)
   if (sidebar) {
-    document.addEventListener("click", function (e) {
-      if (window.innerWidth <= 991) {
-        const clickedToggle =
-          (toggleBtn && toggleBtn.contains(e.target)) ||
-          (mobileMoreBtn && mobileMoreBtn.contains(e.target));
-        if (!sidebar.contains(e.target) && !clickedToggle) {
-          sidebar.classList.remove("show");
-        }
-      }
-    });
+    sidebar
+      .querySelectorAll("a.menu-item, a.submenu-item")
+      .forEach(function (link) {
+        link.addEventListener("click", function () {
+          if (window.innerWidth <= 991) {
+            closeSidebar();
+          }
+        });
+      });
   }
 
   if (typeof gsap !== "undefined") {
